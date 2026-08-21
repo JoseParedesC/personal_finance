@@ -1,4 +1,5 @@
 export type AuthUser = {
+  uid: string;
   name: string;
   email: string;
   picture?: string;
@@ -15,15 +16,16 @@ export function readStoredUser(): AuthUser | null {
     if (!raw) return null;
 
     const parsed = JSON.parse(raw) as Partial<AuthUser>;
-    if (!parsed || typeof parsed.email !== "string" || typeof parsed.name !== "string") {
+    if (!parsed || typeof parsed.email !== "string" || typeof parsed.name !== "string" || typeof parsed.uid !== "string") {
       return null;
     }
 
     return {
+      uid: parsed.uid,
       name: parsed.name,
       email: parsed.email,
       picture: parsed.picture,
-      provider: parsed.provider === "google" ? "google" : "google",
+      provider: "google",
     };
   } catch {
     return null;

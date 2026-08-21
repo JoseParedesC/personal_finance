@@ -7,6 +7,7 @@ export interface Transaction {
   description: string;
   date: string; // formato YYYY-MM-DD
   createdAt: string; // ISO timestamp de creación
+  updatedAt?: string; // ISO timestamp de última edición
 }
 
 /** Datos que el usuario ingresa en el formulario, antes de generar id/createdAt */

@@ -1,114 +1,21 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "../components/common/Button";
-import { GOOGLE_CLIENT_ID, type AuthUser } from "../services/auth";
+import { useAuth } from "../contexts/AuthContext";
 
-declare global {
-  interface Window {
-    google?: {
-      accounts: {
-        id: {
-          initialize: (config: {
-            client_id: string;
-            callback: (response: { credential: string }) => void;
-          }) => void;
-          renderButton: (
-            element: HTMLElement | null,
-            options: {
-              theme?: "outline" | "filled_blue" | "filled_black";
-              size?: "large" | "medium" | "small";
-              width?: number | string;
-              text?: string;
-              shape?: "rectangular" | "pill";
-              logo_alignment?: "left" | "center";
-            }
-          ) => void;
-          prompt: () => void;
-        };
-      };
-    };
+export function LoginPage() {
+  const { loginWithGoogle, loading, error } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  async function handleGoogleLogin() {
+    try {
+      setIsSubmitting(true);
+      await loginWithGoogle();
+    } catch {
+      // El mensaje de error ya se muestra desde AuthContext.
+    } finally {
+      setIsSubmitting(false);
+    }
   }
-}
-
-interface LoginPageProps {
-  onLogin: (user: AuthUser) => void;
-}
-
-function decodeGoogleUser(credential: string) {
-  const payload = credential.split(".")[1];
-  const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
-  const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=");
-  const decoded = window.atob(padded);
-  const json = JSON.parse(decoded) as {
-    name?: string;
-    email?: string;
-    picture?: string;
-  };
-
-  return {
-    name: json.name ?? "Usuario",
-    email: json.email ?? "usuario@gmail.com",
-    picture: json.picture,
-  };
-}
-
-export function LoginPage({ onLogin }: LoginPageProps) {
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (!GOOGLE_CLIENT_ID) {
-      setError("Falta la variable VITE_GOOGLE_CLIENT_ID. Agregala en tu archivo .env.local para habilitar Google Sign-In.");
-      return;
-    }
-
-    let script = document.querySelector<HTMLScriptElement>("script[data-google-auth='true']");
-
-    if (!script) {
-      script = document.createElement("script");
-      script.src = "https://accounts.google.com/gsi/client";
-      script.async = true;
-      script.defer = true;
-      script.dataset.googleAuth = "true";
-      document.body.appendChild(script);
-    }
-
-    const initializeGoogle = () => {
-      const google = window.google;
-      const button = document.getElementById("google-signin-button");
-
-      if (!google?.accounts?.id || !button) {
-        return;
-      }
-
-      google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: (response) => {
-          const userData = decodeGoogleUser(response.credential);
-          onLogin({
-            name: userData.name,
-            email: userData.email,
-            picture: userData.picture,
-            provider: "google",
-          });
-        },
-      });
-
-      google.accounts.id.renderButton(button, {
-        theme: "outline",
-        size: "large",
-        width: 320,
-        text: "signin_with",
-        shape: "pill",
-        logo_alignment: "left",
-      });
-    };
-
-    if (window.google?.accounts?.id) {
-      initializeGoogle();
-      return;
-    }
-
-    script.onload = initializeGoogle;
-  }, [onLogin]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,_#f4f1ea,_#ebf0f4_35%,_#dfe7ef_100%)] px-4 py-10">
@@ -118,7 +25,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             F
           </div>
           <div>
-            <p className="font-display text-xl font-semibold text-ink">Finanzas</p>
+            <p className="font-display text-xl font-semibold text-ink">Mis Finanzas</p>
             <p className="text-xs uppercase tracking-[0.24em] text-slate">personales</p>
           </div>
         </div>
@@ -126,7 +33,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
         <div className="mb-6 text-center">
           <h1 className="font-display text-3xl font-semibold text-ink">Inicia sesión</h1>
           <p className="mt-2 text-sm text-slate">
-            Usa tu cuenta de Google para acceder a tus movimientos y resúmenes.
+            Administra tus ingresos, gastos y resúmenes con tu cuenta de Google.
           </p>
         </div>
 
@@ -136,21 +43,19 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           </div>
         ) : null}
 
-        <div className="flex justify-center">
-          <div id="google-signin-button" className="min-h-[44px]" />
-        </div>
+        <Button
+          type="button"
+          fullWidth
+          onClick={handleGoogleLogin}
+          disabled={loading || isSubmitting}
+          className="bg-ink text-paper hover:bg-ink/90"
+        >
+          {isSubmitting ? "Conectando..." : "Continuar con Google"}
+        </Button>
 
         <div className="mt-6 border-t border-line pt-5 text-center text-xs text-slate">
-          Tu sesión se guarda localmente en este navegador.
+          Tus datos se guardan por usuario en Firebase.
         </div>
-
-        {!GOOGLE_CLIENT_ID ? (
-          <div className="mt-5">
-            <Button variant="secondary" fullWidth disabled>
-              Google no configurado
-            </Button>
-          </div>
-        ) : null}
       </div>
     </div>
   );
