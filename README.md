@@ -51,28 +51,39 @@ npm run build
 npm run preview
 ```
 
-## Despliegue en GitHub Pages
+## Despliegue en Railway
 
-El proyecto incluye un workflow (`.github/workflows/deploy.yml`) que hace
-build y publica automáticamente en GitHub Pages cada vez que haces push a
-`main`.
+El proyecto está listo para desplegarse en [Railway](https://railway.app)
+como un servicio Node. Railway detecta el proyecto con Nixpacks, instala
+dependencias, corre `npm run build` automáticamente (porque existe el
+script `build` en `package.json`) y luego ejecuta el comando de arranque.
 
-Pasos para activarlo en un repositorio nuevo:
+Configuración incluida:
 
-1. Sube este proyecto a un repositorio de GitHub.
-2. En el repositorio, ve a **Settings → Pages** y en "Source" selecciona
-   **GitHub Actions**.
-3. Haz push a `main`. El workflow construye el proyecto y lo publica.
+- `railway.json`: define el builder (Nixpacks) y el comando de arranque
+  (`npm run start`).
+- Script `start` en `package.json`: sirve la carpeta `dist` ya compilada
+  con [`serve`](https://www.npmjs.com/package/serve), escuchando en el
+  puerto que Railway inyecta mediante la variable de entorno `PORT`.
 
-La aplicación se sirve bajo una subruta
-(`https://usuario.github.io/nombre-del-repositorio/`), no en la raíz. Esto
-está resuelto en `vite.config.ts`, que toma el nombre del repositorio desde
-la variable de entorno `VITE_BASE_PATH` (el workflow la define
-automáticamente a partir del nombre del repo). Si prefieres fijarlo a mano
-para pruebas locales de build:
+Pasos para desplegar:
+
+1. Sube este proyecto a un repositorio de GitHub (o usa Railway CLI para
+   subirlo directamente).
+2. En Railway, crea un nuevo proyecto y selecciona **Deploy from GitHub
+   repo**, apuntando a este repositorio.
+3. Railway detecta el `railway.json`, instala dependencias, ejecuta
+   `npm run build` y luego `npm run start`. No hace falta configurar
+   variables de entorno adicionales: Railway asigna `PORT`
+   automáticamente y el script `start` lo respeta.
+4. Cuando el deploy termine, Railway asigna un dominio público (o puedes
+   conectar uno propio). La app se sirve desde la raíz de ese dominio.
+
+Para probar el mismo flujo en local antes de desplegar:
 
 ```bash
-VITE_BASE_PATH=nombre-del-repositorio npm run build
+npm run build
+npm run start
 ```
 
 ## Almacenamiento (localStorage)
