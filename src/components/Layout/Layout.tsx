@@ -1,14 +1,17 @@
 import { useState, type ReactNode } from "react";
-import { LayoutDashboard, ArrowLeftRight, PieChart, Plus, Wallet } from "lucide-react";
+import { LayoutDashboard, ArrowLeftRight, PieChart, Plus, Wallet, LogOut } from "lucide-react";
 import { Modal } from "../common/Modal";
 import { TransactionForm } from "../TransactionForm/TransactionForm";
 import { useTransactionManager } from "../TransactionManager/TransactionManager";
+import type { AuthUser } from "../../services/auth";
 
 export type Page = "dashboard" | "transactions" | "summary";
 
 interface LayoutProps {
   page: Page;
   onNavigate: (page: Page) => void;
+  user: AuthUser;
+  onLogout: () => void;
   children: ReactNode;
 }
 
@@ -18,14 +21,14 @@ const NAV_ITEMS: { id: Page; label: string; icon: typeof LayoutDashboard }[] = [
   { id: "summary", label: "Resumen", icon: PieChart },
 ];
 
-export function Layout({ page, onNavigate, children }: LayoutProps) {
+export function Layout({ page, onNavigate, user, onLogout, children }: LayoutProps) {
   const { add } = useTransactionManager();
   const [isAddOpen, setIsAddOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-paper">
       <header className="sticky top-0 z-30 border-b border-line bg-paper/90 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-ink text-paper">
               <Wallet size={16} />
@@ -34,13 +37,39 @@ export function Layout({ page, onNavigate, children }: LayoutProps) {
               Finanzas personales
             </p>
           </div>
-          <button
-            onClick={() => setIsAddOpen(true)}
-            className="hidden items-center gap-1.5 rounded-full bg-ink px-4 py-2 text-sm font-medium text-paper transition-colors hover:bg-ink/90 sm:inline-flex"
-          >
-            <Plus size={15} />
-            Nuevo movimiento
-          </button>
+
+          <div className="flex items-center gap-3">
+            <div className="hidden items-center gap-2 rounded-full border border-line bg-mist px-3 py-1.5 sm:flex">
+              {user.picture ? (
+                <img src={user.picture} alt={user.name} className="h-7 w-7 rounded-full object-cover" />
+              ) : (
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-ink text-xs font-bold text-paper">
+                  {user.name.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <div className="text-left leading-tight">
+                <p className="text-xs font-medium text-ink">{user.name}</p>
+                <p className="text-[10px] text-slate">{user.email}</p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setIsAddOpen(true)}
+              className="hidden items-center gap-1.5 rounded-full bg-ink px-4 py-2 text-sm font-medium text-paper transition-colors hover:bg-ink/90 sm:inline-flex"
+            >
+              <Plus size={15} />
+              Nuevo movimiento
+            </button>
+
+            <button
+              onClick={onLogout}
+              className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3 py-2 text-sm font-medium text-slate transition-colors hover:bg-mist"
+              aria-label="Cerrar sesión"
+            >
+              <LogOut size={15} />
+              <span className="hidden sm:inline">Salir</span>
+            </button>
+          </div>
         </div>
       </header>
 
