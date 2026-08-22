@@ -77,6 +77,11 @@ export async function createMovimiento(uid: string, input: TransactionInput): Pr
     updatedAt: serverTimestamp() as unknown as Timestamp,
   };
 
+  console.info("Firestore: creando movimiento", {
+    path: MOVIMIENTOS_PATH(uid),
+    type: input.type,
+    amount: input.amount,
+  });
   const docRef = await addDoc(movimientosRef, payload);
   const saved = await getDoc(docRef);
 

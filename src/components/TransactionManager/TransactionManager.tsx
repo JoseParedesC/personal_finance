@@ -54,7 +54,7 @@ interface TransactionManagerContextValue {
   resetFilters: () => void;
 
   // CRUD controlado internamente
-  add: (input: TransactionInput) => void;
+  add: (input: TransactionInput) => Promise<unknown>;
   requestEdit: (id: string) => void;
   cancelEdit: () => void;
   confirmEdit: (id: string, changes: TransactionInput) => void;

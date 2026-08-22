@@ -54,9 +54,14 @@ export function useTransactions() {
   const addTransaction = useCallback(
     async (input: TransactionInput) => {
       if (!user?.uid) return null;
-      const transaction = await createMovimiento(user.uid, input);
-      setTransactions((previous) => [transaction, ...previous]);
-      return transaction;
+      try {
+        const transaction = await createMovimiento(user.uid, input);
+        setTransactions((previous) => [transaction, ...previous]);
+        return transaction;
+      } catch (error) {
+        console.error("Firestore rechazó la creación del movimiento", error);
+        throw error;
+      }
     },
     [user?.uid]
   );

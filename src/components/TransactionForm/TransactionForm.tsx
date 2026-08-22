@@ -6,7 +6,7 @@ import { Button } from "../common/Button";
 
 interface TransactionFormProps {
   initial?: Transaction | null;
-  onSubmit: (input: TransactionInput) => void;
+  onSubmit: (input: TransactionInput) => void | Promise<void>;
   onCancel?: () => void;
   submitLabel?: string;
 }
@@ -46,18 +46,23 @@ export function TransactionForm({
     return next;
   }
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const validation = validate();
     setErrors(validation);
     if (Object.keys(validation).length > 0) return;
 
-    onSubmit({
-      type,
-      amount: Math.abs(Number(amount)),
-      description: description.trim(),
-      date,
-    });
+    try {
+      await onSubmit({
+        type,
+        amount: Math.abs(Number(amount)),
+        description: description.trim(),
+        date,
+      });
+    } catch (error) {
+      console.error("No se pudo guardar el movimiento en Firestore", error);
+      return;
+    }
 
     if (!initial) {
       setAmount("");

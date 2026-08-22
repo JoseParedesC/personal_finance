@@ -123,8 +123,8 @@ export function Layout({ page, onNavigate, user, onLogout, children }: LayoutPro
       <Modal isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} title="Nuevo movimiento">
         <TransactionForm
           onCancel={() => setIsAddOpen(false)}
-          onSubmit={(input) => {
-            add(input);
+          onSubmit={async (input) => {
+            await add(input);
             setIsAddOpen(false);
           }}
         />
