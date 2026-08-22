@@ -11,6 +11,14 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID ?? "",
 };
 
+console.log("Firebase config:", {
+  authDomain: firebaseConfig.authDomain,
+  projectId: firebaseConfig.projectId,
+  messagingSenderId: firebaseConfig.messagingSenderId,
+  appId: firebaseConfig.appId,
+  hasApiKey: Boolean(firebaseConfig.apiKey),
+});
+
 export const isFirebaseConfigured = Object.values(firebaseConfig).every(Boolean);
 
 export const firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
