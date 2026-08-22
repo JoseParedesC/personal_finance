@@ -30,9 +30,8 @@ import { ConfirmDialog } from "../common/ConfirmDialog";
  * hacia afuera solo expone un contrato estable a través de contexto
  * (`useTransactionManager`).
  *
- * Ningún componente hijo importa `useTransactions` ni `services/storage`
- * directamente: todos consumen este shell. Esto permite, por ejemplo,
- * cambiar la fuente de datos (localStorage -> IndexedDB -> API) o añadir
+ * Ningún componente hijo importa `useTransactions` directamente: todos
+ * consumen este shell. Esto permite centralizar la fuente Firestore y añadir
  * reglas de negocio (validaciones, confirmaciones, límites) sin tocar
  * ninguna pantalla ni componente de presentación.
  */

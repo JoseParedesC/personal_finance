@@ -1,8 +1,8 @@
 # Finanzas personales
 
 Aplicación web para registrar ingresos y gastos, ver tu saldo al instante y
-entender cómo se mueve tu dinero. Corre completamente en el navegador: no
-tiene backend, no tiene login, no envía datos a ningún servidor.
+entender cómo se mueve tu dinero. Usa Firebase Authentication y Cloud
+Firestore para autenticar usuarios y guardar sus movimientos.
 
 ## Funcionalidades
 
@@ -16,8 +16,7 @@ tiene backend, no tiene login, no envía datos a ningún servidor.
 - Exportar e importar un respaldo en JSON (`finanzas-backup.json`).
 - Formato de moneda en pesos colombianos (COP).
 - 100% responsive: desktop, tablet y móvil.
-- Todo se guarda en `localStorage`: tus datos persisten al cerrar el
-  navegador y nunca salen de tu equipo.
+- Los movimientos se guardan en Cloud Firestore, separados por usuario.
 
 ## Tecnologías
 
@@ -26,7 +25,8 @@ tiene backend, no tiene login, no envía datos a ningún servidor.
 - Tailwind CSS
 - Recharts (gráfica de flujo financiero)
 - lucide-react (iconos)
-- `localStorage` como única persistencia (sin backend)
+- Firebase Authentication (login con Google)
+- Cloud Firestore (persistencia de movimientos)
 
 ## Instalación local
 
@@ -40,9 +40,9 @@ npm install
 npm run dev
 ```
 
-En desarrollo, si no hay movimientos guardados, la app carga automáticamente
-algunos datos de prueba (ver `src/mock/mockData.ts`). Esto **no** ocurre en
-producción.
+La aplicación usa la configuración de Firebase definida mediante variables
+`VITE_FIREBASE_*` y requiere que Cloud Firestore y Google Authentication estén
+habilitados en el proyecto de Firebase.
 
 ## Build de producción
 
@@ -86,17 +86,15 @@ npm run build
 npm run start
 ```
 
-## Almacenamiento (localStorage)
+## Almacenamiento (Cloud Firestore)
 
-Todos los movimientos se guardan bajo la clave `finanzas:transactions` en
-`localStorage` del navegador. Toda la lógica de lectura/escritura vive en
-`src/services/storage.ts`, que es la única parte de la app que sabe que el
-almacenamiento es `localStorage`. El resto del código pasa por el hook
-`useTransactions` y, más arriba, por el componente `TransactionManager`.
+Todos los movimientos se guardan en la subcolección
+`users/{uid}/movimientos` de Cloud Firestore. La autenticación y la sesión las
+gestiona Firebase Authentication; la aplicación no guarda usuarios ni
+movimientos en el almacenamiento del navegador.
 
-Como los datos viven únicamente en el navegador, usa **Exportar datos** en
-la sección Movimientos para generar un respaldo (`finanzas-backup.json`) y
-**Importar datos** para restaurarlo en otro navegador o equipo.
+La sección Movimientos permite exportar un respaldo JSON e importarlo de nuevo
+en Firestore para el usuario autenticado.
 
 ## Estructura del proyecto
 
@@ -119,7 +117,8 @@ src/
 ├── hooks/
 │   └── useTransactions.ts
 ├── services/
-│   └── storage.ts
+│   ├── firebase.ts
+│   └── movimientos.service.ts
 ├── utils/
 │   ├── currency.ts
 │   ├── dates.ts
@@ -127,8 +126,7 @@ src/
 ├── types/
 │   └── transaction.ts
 ├── mock/
-│   ├── mockData.ts
-│   └── seedDev.ts
+│   └── mockData.ts
 ├── App.tsx
 └── main.tsx
 ```
@@ -137,11 +135,11 @@ src/
 
 `TransactionManager` es el único componente que conoce las operaciones CRUD
 reales. Internamente usa `useTransactions` (que a su vez usa
-`services/storage.ts`) y expone un contrato estable mediante contexto
+`services/movimientos.service.ts`) y expone un contrato estable mediante contexto
 (`useTransactionManager`): datos, totales derivados, filtros y funciones
 como `add`, `requestEdit`, `confirmEdit`, `requestDelete`. También es dueño
 del diálogo de confirmación de borrado.
 
 Ningún componente de presentación (formularios, listas, tarjetas) importa
-`storage.ts` ni `useTransactions` directamente — todos consumen el shell.
-Esto permite cambiar cómo o dónde se guardan los datos sin tocar la UI.
+`movimientos.service.ts` ni `useTransactions` directamente — todos consumen el
+shell. Esto mantiene la UI desacoplada de Firestore.
