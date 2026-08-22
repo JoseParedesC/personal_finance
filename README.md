@@ -106,6 +106,7 @@ src/
 │   ├── auth/                # autenticación, contexto y LoginPage
 │   ├── dashboard/           # pantalla y componentes del dashboard
 │   ├── summary/             # pantalla, resúmenes y gráfica
+│   ├── categories/          # maestro Categorías con @joseparedesc/master-crud
 │   └── transactions/        # pantalla, CRUD, hook y servicio de movimientos
 └── shared/
    ├── components/          # componentes reutilizables y Layout
@@ -114,6 +115,10 @@ src/
    ├── types/
    └── utils/
 ```
+
+El maestro de Categorías usa `@joseparedesc/master-crud` y administra código,
+nombre, estado y tipo de movimiento (ingreso o egreso). Se accede desde
+`Configuración > Categoría` en el menú lateral.
 
 ### Sobre `TransactionManager` (el "caparazón")
 

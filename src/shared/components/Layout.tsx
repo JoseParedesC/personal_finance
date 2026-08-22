@@ -1,11 +1,11 @@
 import { useState, type ReactNode } from "react";
-import { LayoutDashboard, ArrowLeftRight, PieChart, Plus, Wallet, LogOut } from "lucide-react";
+import { LayoutDashboard, ArrowLeftRight, PieChart, Plus, Wallet, LogOut, Settings } from "lucide-react";
 import { Modal } from "./Modal";
 import { TransactionForm } from "../../modules/transactions/components/TransactionForm";
 import { useTransactionManager } from "../../modules/transactions/components/TransactionManager";
 import type { AuthUser } from "../../modules/auth/services/auth";
 
-export type Page = "dashboard" | "transactions" | "summary";
+export type Page = "dashboard" | "transactions" | "summary" | "categories";
 
 interface LayoutProps {
   page: Page;
@@ -19,6 +19,10 @@ const NAV_ITEMS: { id: Page; label: string; icon: typeof LayoutDashboard }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "transactions", label: "Movimientos", icon: ArrowLeftRight },
   { id: "summary", label: "Resumen", icon: PieChart },
+];
+
+const CONFIG_ITEMS: { id: Page; label: string; icon: typeof LayoutDashboard }[] = [
+  { id: "categories", label: "Categoría", icon: Settings },
 ];
 
 export function Layout({ page, onNavigate, user, onLogout, children }: LayoutProps) {
@@ -91,6 +95,24 @@ export function Layout({ page, onNavigate, user, onLogout, children }: LayoutPro
                 </button>
               </li>
             ))}
+            <li className="px-3 pb-1 pt-6 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate">
+              Configuración
+            </li>
+            {CONFIG_ITEMS.map(({ id, label, icon: Icon }) => (
+              <li key={id}>
+                <button
+                  onClick={() => onNavigate(id)}
+                  className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                    page === id
+                      ? "bg-ink text-paper"
+                      : "text-slate hover:bg-mist hover:text-ink"
+                  }`}
+                >
+                  <Icon size={16} />
+                  {label}
+                </button>
+              </li>
+            ))}
           </ul>
         </nav>
 
@@ -104,6 +126,18 @@ export function Layout({ page, onNavigate, user, onLogout, children }: LayoutPro
             key={id}
             onClick={() => onNavigate(id)}
             className={`flex flex-col items-center gap-1 px-4 py-1 text-xs font-medium ${
+              page === id ? "text-ink" : "text-slate"
+            }`}
+          >
+            <Icon size={18} />
+            {label}
+          </button>
+        ))}
+        {CONFIG_ITEMS.map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            onClick={() => onNavigate(id)}
+            className={`flex flex-col items-center gap-1 px-2 py-1 text-xs font-medium ${
               page === id ? "text-ink" : "text-slate"
             }`}
           >

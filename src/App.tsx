@@ -4,13 +4,15 @@ import { Layout, type Page } from "./shared/components/Layout";
 import { Dashboard } from "./modules/dashboard/Dashboard";
 import { Transactions } from "./modules/transactions/Transactions";
 import { Summary } from "./modules/summary/Summary";
+import { Categories } from "./modules/categories/Categories";
 import { LoginPage } from "./modules/auth/components/LoginPage";
 import { useAuth } from "./modules/auth/context/AuthContext";
 
-const PAGES: Record<Page, () => JSX.Element> = {
+const PAGES: Record<Page, () => JSX.Element | null> = {
   dashboard: Dashboard,
   transactions: Transactions,
   summary: Summary,
+  categories: Categories,
 };
 
 export default function App() {
