@@ -15,11 +15,13 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import type { Transaction, TransactionInput } from "../../../shared/types/transaction";
+import { Category } from "../../../../src/modules/categories/types/category";
 import { firebaseDb } from "../../../shared/services/firebase";
 
 export type FirestoreMovimiento = {
   uid: string;
   amount: number;
+  category: Category | null,
   type: Transaction["type"];
   description: string;
   date: string;
@@ -48,6 +50,7 @@ function toTransaction(docSnap: { id: string; data: () => DocumentData | undefin
 
   return {
     id: docSnap.id,
+    category: data.category,
     amount: data.amount,
     type: data.type,
     description: data.description,
@@ -70,6 +73,7 @@ export async function createMovimiento(uid: string, input: TransactionInput): Pr
   const payload: FirestoreMovimiento = {
     uid,
     amount: input.amount,
+    category: input.category,
     type: input.type,
     description: input.description,
     date: input.date,
