@@ -123,8 +123,7 @@ export function TransactionForm({
                 value={category}
                 onChange={setCategory}
                 search={searchCategories}
-                minSearchLength={2}
-                debounceMs={3000}
+                minSearchLength={3}
                 getOptionLabel={(category) =>
                   `${category.code} - ${category.name}`
                 }
