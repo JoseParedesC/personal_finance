@@ -51,5 +51,9 @@ export const categoryConfig: MasterCrudConfig<Category> = {
     code: z.string().trim().min(1, "El código es obligatorio").max(20),
     name: z.string().trim().min(1, "El nombre es obligatorio").max(80),
     movementType: z.enum(["income", "expense"]),
+    color: z
+    .string()
+    .trim()
+    .regex(/^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/, "Usa un color hexadecimal válido, ej: #4ADE80"),
   }),
 };
