@@ -4,6 +4,7 @@ export type MovementType = "income" | "expense";
 
 export interface Category extends MasterEntity {
   movementType: MovementType;
+  color: string;
 }
 
 export type CategoryInput = Omit<Category, "id" | "createdAt" | "createdBy" | "updatedAt" | "updatedBy">;

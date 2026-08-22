@@ -24,6 +24,17 @@ export function TransactionItem({ transaction }: { transaction: Transaction }) {
       </div>
 
       <div className="flex items-center gap-1 shrink-0">
+        {transaction.category && (
+        <span
+          className="shrink-0 truncate rounded-full border px-2 py-0.5 text-xs font-medium"
+          style={{
+            borderColor: transaction.category.color,
+            color: transaction.category.color,
+          }}
+        >
+          {transaction.category.name}
+        </span>
+      )}
         <span
           className={`font-mono text-sm font-medium tabular-nums ${
             isIncome ? "text-moss" : "text-clay"
