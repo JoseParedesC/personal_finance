@@ -38,9 +38,18 @@ export function TransactionForm({
   const [errors, setErrors] = useState<FormErrors>({});
 
   const searchCategories = useMemo(
-    () => (user ? createMasterSelectorService<Category>(user.uid) : null),
+    () => (user 
+      ? createMasterSelectorService<Category>(
+        user.uid,
+        (category) => category.movementType === type
+      ) : null),
     [user]
   );
+
+  function handleTypeChange(nextType: TransactionType) {
+    setType(nextType);
+    setCategory(null);
+  }
 
   function validate(): FormErrors {
     const next: FormErrors = {};
@@ -91,7 +100,7 @@ export function TransactionForm({
         <div className="grid grid-cols-2 gap-2">
           <button
             type="button"
-            onClick={() => setType("income")}
+            onClick={() => handleTypeChange("income")}
             className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors ${
               type === "income"
                 ? "border-moss bg-moss-light text-moss"
@@ -102,7 +111,7 @@ export function TransactionForm({
           </button>
           <button
             type="button"
-            onClick={() => setType("expense")}
+            onClick={() => handleTypeChange("expense")}
             className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors ${
               type === "expense"
                 ? "border-clay bg-clay-light text-clay"
@@ -119,6 +128,7 @@ export function TransactionForm({
         <div className="grid grid-cols-2 gap-2">
           {searchCategories && (
               <MasterSelector<Category>
+                key={type}
                 entity="categories"
                 value={category}
                 onChange={setCategory}
