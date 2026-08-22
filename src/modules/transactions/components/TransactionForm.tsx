@@ -1,11 +1,12 @@
-import { useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import type { Transaction, TransactionInput, TransactionType } from "../../../shared/types/transaction";
 import { todayISO } from "../../../shared/utils/dates";
 import { Field } from "../../../shared/components/Field";
 import { Button } from "../../../shared/components/Button";
 import { MasterSelector } from "@joseparedesc/master-components";
 import { Category } from "../../categories/types/category";
-import {  MasterSelectorService } from "../../../shared/services/master-selector";
+import { createMasterSelectorService } from "../../../shared/services/master-selector";
+import { useAuth } from "../../auth/context/AuthContext";
 
 interface TransactionFormProps {
   initial?: Transaction | null;
@@ -26,6 +27,7 @@ export function TransactionForm({
   onCancel,
   submitLabel = "Agregar movimiento",
 }: TransactionFormProps) {
+  const { user } = useAuth();
   const [type, setType] = useState<TransactionType>(initial?.type ?? "income");
   const [category, setCategory] = useState<Category | null>(null);
   const [amount, setAmount] = useState<string>(
@@ -34,6 +36,11 @@ export function TransactionForm({
   const [description, setDescription] = useState(initial?.description ?? "");
   const [date, setDate] = useState(initial?.date ?? todayISO());
   const [errors, setErrors] = useState<FormErrors>({});
+
+  const searchCategories = useMemo(
+    () => (user ? createMasterSelectorService<Category>(user.uid) : null),
+    [user]
+  );
 
   function validate(): FormErrors {
     const next: FormErrors = {};
@@ -110,17 +117,19 @@ export function TransactionForm({
       
       <Field label="Category">
         <div className="grid grid-cols-2 gap-2">
-          <MasterSelector<Category>
-              entity="categories"
-              value={category}
-              onChange={setCategory}
-              search={MasterSelectorService}
-              getOptionLabel={(category) =>
-                `${category.code} - ${category.name}`
-              }
-              getOptionValue={(category) => category.id}
-              placeholder="Buscar cuenta..."
-            />
+          {searchCategories && (
+            <MasterSelector<Category>
+                entity="categories"
+                value={category}
+                onChange={setCategory}
+                search={searchCategories}
+                getOptionLabel={(category) =>
+                  `${category.code} - ${category.name}`
+                }
+                getOptionValue={(category) => category.id}
+                placeholder="Buscar cuenta..."
+              />
+          )}
         </div>
       </Field>
 
