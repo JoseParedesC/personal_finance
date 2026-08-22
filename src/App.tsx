@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { TransactionManager } from "./components/TransactionManager/TransactionManager";
-import { Layout, type Page } from "./components/Layout/Layout";
-import { Dashboard } from "./pages/Dashboard";
-import { Transactions } from "./pages/Transactions";
-import { Summary } from "./pages/Summary";
-import { LoginPage } from "./pages/LoginPage";
-import { useAuth } from "./contexts/AuthContext";
+import { TransactionManager } from "./modules/transactions/components/TransactionManager";
+import { Layout, type Page } from "./shared/components/Layout";
+import { Dashboard } from "./modules/dashboard/Dashboard";
+import { Transactions } from "./modules/transactions/Transactions";
+import { Summary } from "./modules/summary/Summary";
+import { LoginPage } from "./modules/auth/components/LoginPage";
+import { useAuth } from "./modules/auth/context/AuthContext";
 
 const PAGES: Record<Page, () => JSX.Element> = {
   dashboard: Dashboard,

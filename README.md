@@ -100,42 +100,26 @@ en Firestore para el usuario autenticado.
 
 ```text
 src/
-├── components/
-│   ├── TransactionManager/   # shell: controla el CRUD internamente
-│   ├── Dashboard/
-│   ├── TransactionForm/
-│   ├── TransactionList/
-│   ├── Summary/
-│   ├── Charts/
-│   ├── Filters/
-│   ├── Layout/
-│   └── common/
-├── pages/
-│   ├── Dashboard.tsx
-│   ├── Transactions.tsx
-│   └── Summary.tsx
-├── hooks/
-│   └── useTransactions.ts
-├── services/
-│   ├── firebase.ts
-│   └── movimientos.service.ts
-├── utils/
-│   ├── currency.ts
-│   ├── dates.ts
-│   └── calculations.ts
-├── types/
-│   └── transaction.ts
-├── mock/
-│   └── mockData.ts
 ├── App.tsx
-└── main.tsx
+├── main.tsx
+├── modules/
+│   ├── auth/                # autenticación, contexto y LoginPage
+│   ├── dashboard/           # pantalla y componentes del dashboard
+│   ├── summary/             # pantalla, resúmenes y gráfica
+│   └── transactions/        # pantalla, CRUD, hook y servicio de movimientos
+└── shared/
+   ├── components/          # componentes reutilizables y Layout
+   ├── mock/
+   ├── services/            # Firebase compartido
+   ├── types/
+   └── utils/
 ```
 
 ### Sobre `TransactionManager` (el "caparazón")
 
 `TransactionManager` es el único componente que conoce las operaciones CRUD
 reales. Internamente usa `useTransactions` (que a su vez usa
-`services/movimientos.service.ts`) y expone un contrato estable mediante contexto
+`modules/transactions/services/movimientos.service.ts`) y expone un contrato estable mediante contexto
 (`useTransactionManager`): datos, totales derivados, filtros y funciones
 como `add`, `requestEdit`, `confirmEdit`, `requestDelete`. También es dueño
 del diálogo de confirmación de borrado.
