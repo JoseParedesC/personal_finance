@@ -23,7 +23,10 @@ export const isFirebaseConfigured = Object.values(firebaseConfig).every(Boolean)
 
 export const firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
 export const firebaseAuth = getAuth(firebaseApp);
-export const firebaseDb = getFirestore(firebaseApp);
+export const firebaseDb = getFirestore(
+    firebaseApp, 
+    import.meta.env.VITE_FIREBASE_DATABASE
+  );
 export const googleProvider = new GoogleAuthProvider();
 
 googleProvider.setCustomParameters({
