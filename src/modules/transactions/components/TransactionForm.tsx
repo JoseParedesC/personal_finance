@@ -118,11 +118,13 @@ export function TransactionForm({
       <Field label="Category">
         <div className="grid grid-cols-2 gap-2">
           {searchCategories && (
-            <MasterSelector<Category>
+              <MasterSelector<Category>
                 entity="categories"
                 value={category}
                 onChange={setCategory}
                 search={searchCategories}
+                minSearchLength={2}
+                debounceMs={400}
                 getOptionLabel={(category) =>
                   `${category.code} - ${category.name}`
                 }
