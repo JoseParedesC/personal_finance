@@ -1,8 +1,11 @@
+import { Category } from '../../../src/modules/categories/types/category';
+
 export type TransactionType = "income" | "expense";
 
 export interface Transaction {
   id: string;
   amount: number; // siempre positivo; el signo lo determina `type`
+  category: Category | null,
   type: TransactionType;
   description: string;
   date: string; // formato YYYY-MM-DD
@@ -13,6 +16,7 @@ export interface Transaction {
 /** Datos que el usuario ingresa en el formulario, antes de generar id/createdAt */
 export type TransactionInput = {
   amount: number;
+  category: Category | null,
   type: TransactionType;
   description: string;
   date: string;

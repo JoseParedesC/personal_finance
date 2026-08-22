@@ -3,6 +3,9 @@ import type { Transaction, TransactionInput, TransactionType } from "../../../sh
 import { todayISO } from "../../../shared/utils/dates";
 import { Field } from "../../../shared/components/Field";
 import { Button } from "../../../shared/components/Button";
+import { MasterSelector } from "@joseparedesc/master-components";
+import { Category } from "../../categories/types/category";
+import {  MasterSelectorService } from "../../../shared/services/master-selector";
 
 interface TransactionFormProps {
   initial?: Transaction | null;
@@ -23,7 +26,8 @@ export function TransactionForm({
   onCancel,
   submitLabel = "Agregar movimiento",
 }: TransactionFormProps) {
-  const [type, setType] = useState<TransactionType>(initial?.type ?? "expense");
+  const [type, setType] = useState<TransactionType>(initial?.type ?? "income");
+  const [category, setCategory] = useState<Category | null>(null);
   const [amount, setAmount] = useState<string>(
     initial ? String(initial.amount) : ""
   );
@@ -55,6 +59,7 @@ export function TransactionForm({
     try {
       await onSubmit({
         type,
+        category,
         amount: Math.abs(Number(amount)),
         description: description.trim(),
         date,
@@ -68,7 +73,8 @@ export function TransactionForm({
       setAmount("");
       setDescription("");
       setDate(todayISO());
-      setType("expense");
+      setType("income");
+      setCategory(null)
     }
   }
 
@@ -98,6 +104,22 @@ export function TransactionForm({
           >
             Gasto
           </button>
+        </div>
+      </Field>
+
+      
+      <Field label="Category">
+        <div className="grid grid-cols-2 gap-2">
+          <MasterSelector<Category>
+              value={category}
+              onChange={setCategory}
+              search={MasterSelectorService}
+              getOptionLabel={(category) =>
+                `${category.code} - ${category.name}`
+              }
+              getOptionValue={(category) => category.id}
+              placeholder="Buscar cuenta..."
+            />
         </div>
       </Field>
 
