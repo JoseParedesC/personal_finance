@@ -1,24 +1,40 @@
-import { MasterSearchParams, MasterSearchResult  } from "@joseparedesc/master-components";
-
+// src/shared/services/master-selector.ts
+import {
+  collection,
+  query as fsQuery,
+  orderBy,
+  startAt,
+  endAt,
+  limit,
+  getDocs,
+} from "firebase/firestore";
+import { MasterSearchParams, MasterSearchResult } from "@joseparedesc/master-components";
+import { firebaseDb } from "./firebase";
 
 export const MasterSelectorService = async <T>({
   entity,
-  query,
+  query: searchTerm,
   page,
   pageSize,
 }: MasterSearchParams): Promise<MasterSearchResult<T>> => {
-  const response = await fetch(
-    `/api/${entity}?search=${encodeURIComponent(query)}&page=${page}&pageSize=${pageSize}`
+  // "entity" es la colección de Firestore, no una ruta REST
+  const colRef = collection(firebaseDb, entity);
+
+  const q = fsQuery(
+    colRef,
+    orderBy("name"),
+    startAt(searchTerm),
+    endAt(searchTerm + "\uf8ff"),
+    limit(pageSize)
   );
 
-  if (!response.ok) {
-    throw new Error(`Error searching ${entity}`);
-  }
-
-  const result: MasterSearchResult<T> = await response.json();
+  const snapshot = await getDocs(q);
+  const items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as T[];
 
   return {
-    ...result,
-    items: result.items.filter((item: T) => (item as T & { active: boolean }).active === true),
+    items: items.filter((item) => (item as T & { active?: boolean }).active !== false),
+    page,
+    pageSize,
+    hasNextPage: items.length === pageSize,
   };
 };
