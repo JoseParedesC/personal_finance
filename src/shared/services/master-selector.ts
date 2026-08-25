@@ -1,34 +1,26 @@
-import { collection, getDocs, orderBy, query as firestoreQuery } from "firebase/firestore";
 import type { MasterSearchFn, MasterSearchParams, MasterSearchResult } from "@joseparedesc/master-components";
-import { firebaseDb } from "./firebase";
+import { apiFetch } from "./api";
 
-export function createMasterSelectorService<T>(
-  userId: string,
+/**
+ * Adapta el buscador de `@joseparedesc/master-components` (usado en el
+ * selector de categoría del formulario de movimientos) para consultar la
+ * API REST propia en vez de Firestore. `entity` (ej: "categories") se usa
+ * como segmento de ruta.
+ */
+export function createMasterSelectorService<T extends { active?: boolean }>(
+  _userId: string,
   extraFilter?: (item: T) => boolean
 ): MasterSearchFn<T> {
   return async ({ entity, query, pageSize }: MasterSearchParams): Promise<MasterSearchResult<T>> => {
-    const colRef = collection(firebaseDb, "users", userId, entity);
-    const snapshot = await getDocs(firestoreQuery(colRef, orderBy("name")));
+    const params = new URLSearchParams({ status: "active" });
+    if (query.trim()) params.set("search", query.trim());
 
-    const allItems = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as unknown as (T & { name?: string; active?: boolean })[];
-
-    const term = query.trim().toLowerCase();
-
-    const filtered = allItems.filter((item) => {
-      const isActive = item.active !== false;
-      if (!isActive) return false;
-      if (extraFilter && !extraFilter(item as T)) return false;
-      if (!term) return true;
-      return (item.name ?? "").toLowerCase().includes(term);
-    });
-
+    const items = await apiFetch<T[]>(`/${entity}?${params.toString()}`);
+    const filtered = extraFilter ? items.filter(extraFilter) : items;
     const page = filtered.slice(0, pageSize);
 
     return {
-      items: page as T[],
+      items: page,
       page: 1,
       pageSize,
       hasNextPage: filtered.length > pageSize,

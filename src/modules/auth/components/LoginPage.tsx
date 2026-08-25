@@ -54,7 +54,7 @@ export function LoginPage() {
         </Button>
 
         <div className="mt-6 border-t border-line pt-5 text-center text-xs text-slate">
-          Tus datos se guardan por usuario en Firebase.
+          Tus datos se guardan por usuario en tu cuenta.
         </div>
       </div>
     </div>

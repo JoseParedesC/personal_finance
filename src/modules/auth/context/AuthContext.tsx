@@ -7,15 +7,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { User } from "firebase/auth";
-import {
-  firebaseAuth,
-  googleProvider,
-  isFirebaseConfigured,
-  onAuthStateChanged,
-  signInWithPopup,
-  signOut,
-} from "../../../shared/services/firebase";
+import { requestGoogleIdToken } from "../../../shared/services/googleIdentity";
+import { fetchCurrentUser, loginWithGoogleIdToken, logout as logoutRequest } from "../services/auth";
 import type { AuthUser } from "../services/auth";
 
 interface AuthContextValue {
@@ -28,50 +21,36 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-function toAuthUser(firebaseUser: User | null): AuthUser | null {
-  if (!firebaseUser) return null;
-
-  return {
-    uid: firebaseUser.uid,
-    name: firebaseUser.displayName ?? "Usuario",
-    email: firebaseUser.email ?? "usuario@gmail.com",
-    picture: firebaseUser.photoURL ?? undefined,
-    provider: "google",
-  };
-}
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Al montar, si ya había un JWT guardado (de una sesión anterior), lo
+  // valida contra el backend y restaura la sesión sin pedir login de nuevo.
   useEffect(() => {
-    if (!isFirebaseConfigured) {
-      setUser(null);
-      setLoading(false);
-      setError("Falta la configuración de Firebase. Revisa las variables VITE_FIREBASE_*");
-      return;
-    }
-
-    const unsubscribe = onAuthStateChanged(firebaseAuth, (firebaseUser) => {
-      setUser(toAuthUser(firebaseUser));
-      setLoading(false);
-      setError(null);
-    });
-
-    return () => unsubscribe();
+    let active = true;
+    fetchCurrentUser()
+      .then((restoredUser) => {
+        if (active) setUser(restoredUser);
+      })
+      .catch(() => {
+        if (active) setUser(null);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
   }, []);
 
   const loginWithGoogle = useCallback(async () => {
-    if (!isFirebaseConfigured) {
-      throw new Error("Firebase no está configurado");
-    }
-
     setError(null);
-
     try {
-      const result = await signInWithPopup(firebaseAuth, googleProvider);
-      setUser(toAuthUser(result.user));
+      const idToken = await requestGoogleIdToken();
+      const loggedInUser = await loginWithGoogleIdToken(idToken);
+      setUser(loggedInUser);
     } catch (caughtError) {
       const message =
         caughtError instanceof Error ? caughtError.message : "No se pudo iniciar sesión con Google";
@@ -82,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async () => {
     setError(null);
-    await signOut(firebaseAuth);
+    logoutRequest();
     setUser(null);
   }, []);
 
