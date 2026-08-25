@@ -1,7 +1,7 @@
 // Reemplaza a `firebaseDb`/`firebaseAuth`: aquí vive la URL base del
 // backend propio y el manejo del JWT que emite tras el login con Google.
 
-export const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
+export const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const TOKEN_STORAGE_KEY = "accessToken";
 
