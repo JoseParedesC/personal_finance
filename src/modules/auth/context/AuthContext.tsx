@@ -49,6 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const idToken = await requestGoogleIdToken();
+      console.log(idToken);
       const loggedInUser = await loginWithGoogleIdToken(idToken);
       setUser(loggedInUser);
     } catch (caughtError) {
