@@ -18,7 +18,7 @@ async function handle<T>(response: Response): Promise<T> {
     const body = await response.json().catch(() => null);
     throw new Error(body?.message ?? `Error de autenticación (${response.status})`);
   }
-  console.log(response.json());
+  console.log(response);
   return response.json() as Promise<T>;
 }
 
