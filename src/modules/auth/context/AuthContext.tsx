@@ -32,7 +32,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let active = true;
     fetchCurrentUser()
       .then((restoredUser) => {
-        console.log(restoredUser);
         if (active) setUser(restoredUser);
       })
       .catch(() => {

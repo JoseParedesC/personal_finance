@@ -18,6 +18,7 @@ async function handle<T>(response: Response): Promise<T> {
     const body = await response.json().catch(() => null);
     throw new Error(body?.message ?? `Error de autenticación (${response.status})`);
   }
+  console.log(response.json());
   return response.json() as Promise<T>;
 }
 
@@ -29,6 +30,7 @@ export async function loginWithGoogleIdToken(idToken: string): Promise<AuthUser>
     body: JSON.stringify({ idToken }),
   });
   const data = await handle<AuthResponse>(response);
+  console.log(data);
   setAccessToken(data.accessToken);
   return data.user;
 }
