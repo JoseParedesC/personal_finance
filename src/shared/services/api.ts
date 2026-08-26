@@ -32,6 +32,7 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
   };
 
   const response = await fetch(`${API_BASE_URL}${path}`, { ...init, headers });
+  console.log("API_BASE_URL:", API_BASE_URL);
 
   if (!response.ok) {
     const body = await response.json().catch(() => null);
