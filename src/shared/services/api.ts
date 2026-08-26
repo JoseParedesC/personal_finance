@@ -31,7 +31,6 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
     ...(init.headers ?? {}),
   };
 
-  console.log("API_BASE_URL:", API_BASE_URL);
   const response = await fetch(`${API_BASE_URL}${path}`, { ...init, headers });
 
   if (!response.ok) {

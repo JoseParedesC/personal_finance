@@ -34,6 +34,8 @@ async function handle<T>(response: Response): Promise<T> {
 
 /** Envía el idToken de Google al backend, que lo valida y devuelve un JWT propio. */
 export async function loginWithGoogleIdToken(idToken: string): Promise<AuthUser> {
+  console.log("API_BASE_URL:", API_BASE_URL);
+  
   const response = await fetch(`${API_BASE_URL}/auth/google`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
