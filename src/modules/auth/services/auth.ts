@@ -18,24 +18,12 @@ async function handle<T>(response: Response): Promise<T> {
     const body = await response.json().catch(() => null);
     throw new Error(body?.message ?? `Error de autenticación (${response.status})`);
   }
-  console.log(response);
-  
-
-  // const response = await fetch(url);
-
-  const text = await response.text();
-
-  console.log("STATUS:", response.status);
-  console.log("CONTENT-TYPE:", response.headers.get("content-type"));
-  console.log("RESPONSE:", text);
-
   return response.json() as Promise<T>;
 }
 
 /** Envía el idToken de Google al backend, que lo valida y devuelve un JWT propio. */
 export async function loginWithGoogleIdToken(idToken: string): Promise<AuthUser> {
-  console.log("API_BASE_URL:", API_BASE_URL);
-  
+
   const response = await fetch(`${API_BASE_URL}/auth/google`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
