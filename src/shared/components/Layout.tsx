@@ -16,7 +16,7 @@ import { TransactionForm } from "../../modules/transactions/components/Transacti
 import { useTransactionManager } from "../../modules/transactions/components/TransactionManager";
 import type { AuthUser } from "../../modules/auth/services/auth";
 
-export type Page = "dashboard" | "transactions" | "summary" | "categories" | "debts" | "credit-cards" | "budgets";
+export type Page = "dashboard" | "transactions" | "summary" | "categories" | "debts" | "credit-cards" | "budgets" | "pockets";
 
 interface LayoutProps {
   page: Page;
@@ -30,6 +30,7 @@ const NAV_ITEMS: { id: Page; label: string; icon: typeof LayoutDashboard }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "transactions", label: "Movimientos", icon: ArrowLeftRight },
   { id: "budgets", label: "Presupuesto", icon: Target },
+  { id: "pockets", label: "Bolsillos", icon: Wallet },
   { id: "debts", label: "Deudas", icon: Landmark },
   { id: "credit-cards", label: "Tarjetas", icon: CreditCardIcon },
   { id: "summary", label: "Resumen", icon: PieChart },

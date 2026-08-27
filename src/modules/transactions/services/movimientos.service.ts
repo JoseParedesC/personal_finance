@@ -2,6 +2,7 @@ import { apiFetch } from "../../../shared/services/api";
 import type { Transaction, TransactionInput } from "../../../shared/types/transaction";
 import type { Category } from "../../categories/types/category";
 import type { CreditCard } from "../../credit-cards/types/creditCard";
+import type { Pocket } from "../../pockets/types/pocket";
 
 // Forma en la que el backend NestJS devuelve un movimiento: usa
 // `categoryId` para escribir y devuelve `category` (objeto completo, vía
@@ -17,6 +18,8 @@ type ApiTransaction = {
   category: Category | null;
   creditCardId: string | null;
   creditCard: CreditCard | null;
+  pocketId: string | null;
+  pocket: Pocket | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -27,6 +30,7 @@ function toTransaction(api: ApiTransaction): Transaction {
     amount: api.amount,
     category: api.category,
     creditCard: api.creditCard,
+    pocket: api.pocket,
     type: api.type,
     description: api.description,
     date: api.date,
@@ -50,6 +54,7 @@ export async function createMovimiento(_uid: string, input: TransactionInput): P
       date: input.date,
       categoryId: input.category?.id ?? null,
       creditCardId: input.creditCard?.id ?? null,
+      pocketId: input.pocket?.id ?? null,
     }),
   });
   return toTransaction(data);
@@ -69,6 +74,7 @@ export async function updateMovimiento(
       ...(changes.date !== undefined ? { date: changes.date } : {}),
       ...(changes.category !== undefined ? { categoryId: changes.category?.id ?? null } : {}),
       ...(changes.creditCard !== undefined ? { creditCardId: changes.creditCard?.id ?? null } : {}),
+      ...(changes.pocket !== undefined ? { pocketId: changes.pocket?.id ?? null } : {}),
     }),
   });
   return toTransaction(data);
@@ -95,6 +101,7 @@ export async function importMovimientos(_uid: string, transactions: Transaction[
         date: t.date,
         categoryId: t.category?.id ?? null,
         creditCardId: t.creditCard?.id ?? null,
+        pocketId: t.pocket?.id ?? null,
         createdAt: t.createdAt,
       })),
     }),

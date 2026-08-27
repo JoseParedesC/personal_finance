@@ -8,6 +8,7 @@ import { Categories } from "./modules/categories/Categories";
 import { Debts } from "./modules/debts/Debts";
 import { CreditCards } from "./modules/credit-cards/CreditCards";
 import { Budgets } from "./modules/budgets/Budgets";
+import { Pockets } from "./modules/pockets/Pockets";
 import { LoginPage } from "./modules/auth/components/LoginPage";
 import { useAuth } from "./modules/auth/context/AuthContext";
 
@@ -19,6 +20,7 @@ const PAGES: Record<Page, () => JSX.Element | null> = {
   debts: Debts,
   "credit-cards": CreditCards,
   budgets: Budgets,
+  pockets: Pockets,
 };
 
 export default function App() {

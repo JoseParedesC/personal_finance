@@ -8,6 +8,7 @@ import { Category } from "../../categories/types/category";
 import { createMasterSelectorService } from "../../../shared/services/master-selector";
 import { useAuth } from "../../auth/context/AuthContext";
 import { useCreditCards } from "../../credit-cards/hooks/useCreditCards";
+import { usePockets } from "../../pockets/hooks/usePockets";
 
 interface TransactionFormProps {
   initial?: Transaction | null;
@@ -30,9 +31,11 @@ export function TransactionForm({
 }: TransactionFormProps) {
   const { user } = useAuth();
   const { cards } = useCreditCards();
+  const { pockets } = usePockets();
   const [type, setType] = useState<TransactionType>(initial?.type ?? "income");
   const [category, setCategory] = useState<Category | null>(null);
   const [creditCardId, setCreditCardId] = useState<string>(initial?.creditCard?.id ?? "");
+  const [pocketId, setPocketId] = useState<string>(initial?.pocket?.id ?? "");
   const [amount, setAmount] = useState<string>(
     initial ? String(initial.amount) : "");
   const [description, setDescription] = useState(initial?.description ?? "");
@@ -49,6 +52,7 @@ export function TransactionForm({
   );
 
   const activeCards = useMemo(() => cards.filter((c) => c.active), [cards]);
+  const activePockets = useMemo(() => pockets.filter((p) => p.active), [pockets]);
 
   function handleTypeChange(nextType: TransactionType) {
     setType(nextType);
@@ -78,12 +82,14 @@ export function TransactionForm({
     if (Object.keys(validation).length > 0) return;
 
     const selectedCard = creditCardId ? activeCards.find((c) => c.id === creditCardId) ?? null : null;
+    const selectedPocket = pocketId ? activePockets.find((p) => p.id === pocketId) ?? null : null;
 
     try {
       await onSubmit({
         type,
         category,
         creditCard: selectedCard,
+        pocket: selectedPocket,
         amount: Math.abs(Number(amount)),
         description: description.trim(),
         date,
@@ -100,6 +106,7 @@ export function TransactionForm({
       setType("income");
       setCategory(null);
       setCreditCardId("");
+      setPocketId("");
     }
   }
 
@@ -152,6 +159,24 @@ export function TransactionForm({
           )}
         </div>
       </Field>
+
+      {activePockets.length > 0 && (
+        <Field label="Bolsillo (opcional)">
+          <select
+            value={pocketId}
+            onChange={(e) => setPocketId(e.target.value)}
+            className="w-full rounded-lg border border-line bg-surface px-3 py-2.5 text-sm text-ink outline-none focus:border-ink"
+          >
+            <option value="">Cuenta principal (sin bolsillo)</option>
+            {activePockets.map((pocket) => (
+              <option key={pocket.id} value={pocket.id}>
+                {pocket.name}
+                {!pocket.affectsBudget ? " (no afecta presupuesto)" : ""}
+              </option>
+            ))}
+          </select>
+        </Field>
+      )}
 
       {type === "expense" && activeCards.length > 0 && (
         <Field label="Pagado con tarjeta de crédito (opcional)">

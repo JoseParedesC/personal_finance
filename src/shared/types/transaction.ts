@@ -1,5 +1,6 @@
 import { Category } from '../../../src/modules/categories/types/category';
 import type { CreditCard } from '../../modules/credit-cards/types/creditCard';
+import type { Pocket } from '../../modules/pockets/types/pocket';
 
 export type TransactionType = "income" | "expense";
 
@@ -8,6 +9,7 @@ export interface Transaction {
   amount: number; // siempre positivo; el signo lo determina `type`
   category: Category | null,
   creditCard?: CreditCard | null;
+  pocket?: Pocket | null;
   type: TransactionType;
   description: string;
   date: string; // formato YYYY-MM-DD
@@ -20,6 +22,7 @@ export type TransactionInput = {
   amount: number;
   category: Category | null,
   creditCard?: CreditCard | null;
+  pocket?: Pocket | null;
   type: TransactionType;
   description: string;
   date: string;
