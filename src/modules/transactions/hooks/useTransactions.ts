@@ -19,37 +19,25 @@ export function useTransactions() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    let isActive = true;
-
+  const reload = useCallback(async () => {
     if (!user?.uid) {
       setTransactions([]);
       setIsLoading(false);
-      return () => {
-        isActive = false;
-      };
+      return;
     }
-
     setIsLoading(true);
-
-    getMovimientos(user.uid)
-      .then((data) => {
-        if (isActive) {
-          setTransactions(data);
-          setIsLoading(false);
-        }
-      })
-      .catch(() => {
-        if (isActive) {
-          setTransactions([]);
-          setIsLoading(false);
-        }
-      });
-
-    return () => {
-      isActive = false;
-    };
+    try {
+      setTransactions(await getMovimientos(user.uid));
+    } catch {
+      setTransactions([]);
+    } finally {
+      setIsLoading(false);
+    }
   }, [user?.uid]);
+
+  useEffect(() => {
+    void reload();
+  }, [reload]);
 
   const addTransaction = useCallback(
     async (input: TransactionInput) => {
@@ -111,5 +99,6 @@ export function useTransactions() {
     deleteTransaction,
     clearAll,
     importTransactions,
+    reload,
   };
 }

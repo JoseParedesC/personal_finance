@@ -5,6 +5,7 @@ import { Button } from "../../shared/components/Button";
 import { useDebts } from "./hooks/useDebts";
 import { DebtForm } from "./components/DebtForm";
 import { DebtCard } from "./components/DebtCard";
+import { useTransactionManager } from "../transactions/components/TransactionManager";
 import type { DebtInput } from "./types/debt";
 
 export function Debts() {
@@ -19,6 +20,7 @@ export function Debts() {
     payInstallment,
     unpayInstallment,
   } = useDebts();
+  const { refreshTransactions } = useTransactionManager();
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   async function handleCreate(input: DebtInput) {
@@ -72,8 +74,16 @@ export function Debts() {
             <DebtCard
               key={debt.id}
               debt={debt}
-              onPayInstallment={(installmentId) => payInstallment(debt.id, installmentId).then(() => undefined)}
-              onUnpayInstallment={(installmentId) => unpayInstallment(debt.id, installmentId).then(() => undefined)}
+              onPayInstallment={(installmentId) =>
+                payInstallment(debt.id, installmentId).then(async () => {
+                  await refreshTransactions();
+                })
+              }
+              onUnpayInstallment={(installmentId) =>
+                unpayInstallment(debt.id, installmentId).then(async () => {
+                  await refreshTransactions();
+                })
+              }
               onToggleActive={() => void updateDebt(debt.id, { active: !debt.active })}
               onDelete={() => void handleDelete(debt.id, debt.name)}
             />

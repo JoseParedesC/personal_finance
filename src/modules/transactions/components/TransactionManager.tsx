@@ -62,6 +62,13 @@ interface TransactionManagerContextValue {
   requestDelete: (id: string) => void;
   clearAll: () => void;
   importTransactions: (data: Transaction[]) => void;
+  /**
+   * Fuerza un refetch desde el backend. Necesario para operaciones que
+   * crean/borran movimientos por fuera de este shell (ej: pagar una cuota
+   * de una deuda, o un cargo/abono de tarjeta de crédito), para que la
+   * pantalla de Movimientos refleje el cambio sin recargar la página.
+   */
+  refreshTransactions: () => Promise<void>;
 }
 
 const TransactionManagerContext =
@@ -94,6 +101,7 @@ export function TransactionManager({ children }: { children: ReactNode }) {
     deleteTransaction,
     clearAll: clearAllInternal,
     importTransactions: importInternal,
+    reload,
   } = useTransactions();
 
   const [filters, setFilters] = useState<TransactionFilters>(EMPTY_FILTERS);
@@ -146,6 +154,7 @@ export function TransactionManager({ children }: { children: ReactNode }) {
     requestDelete: (id) => setPendingDeleteId(id),
     clearAll: () => clearAllInternal(),
     importTransactions: (data) => importInternal(data),
+    refreshTransactions: reload,
   };
 
   return (
