@@ -1,11 +1,22 @@
 import { useState, type ReactNode } from "react";
-import { LayoutDashboard, ArrowLeftRight, PieChart, Plus, Wallet, LogOut, Settings } from "lucide-react";
+import {
+  LayoutDashboard,
+  ArrowLeftRight,
+  PieChart,
+  Plus,
+  Wallet,
+  LogOut,
+  Settings,
+  Landmark,
+  CreditCard as CreditCardIcon,
+  Target,
+} from "lucide-react";
 import { Modal } from "./Modal";
 import { TransactionForm } from "../../modules/transactions/components/TransactionForm";
 import { useTransactionManager } from "../../modules/transactions/components/TransactionManager";
 import type { AuthUser } from "../../modules/auth/services/auth";
 
-export type Page = "dashboard" | "transactions" | "summary" | "categories";
+export type Page = "dashboard" | "transactions" | "summary" | "categories" | "debts" | "credit-cards" | "budgets";
 
 interface LayoutProps {
   page: Page;
@@ -18,6 +29,9 @@ interface LayoutProps {
 const NAV_ITEMS: { id: Page; label: string; icon: typeof LayoutDashboard }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "transactions", label: "Movimientos", icon: ArrowLeftRight },
+  { id: "budgets", label: "Presupuesto", icon: Target },
+  { id: "debts", label: "Deudas", icon: Landmark },
+  { id: "credit-cards", label: "Tarjetas", icon: CreditCardIcon },
   { id: "summary", label: "Resumen", icon: PieChart },
 ];
 

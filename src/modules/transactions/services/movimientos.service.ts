@@ -1,6 +1,7 @@
 import { apiFetch } from "../../../shared/services/api";
 import type { Transaction, TransactionInput } from "../../../shared/types/transaction";
 import type { Category } from "../../categories/types/category";
+import type { CreditCard } from "../../credit-cards/types/creditCard";
 
 // Forma en la que el backend NestJS devuelve un movimiento: usa
 // `categoryId` para escribir y devuelve `category` (objeto completo, vía
@@ -14,6 +15,8 @@ type ApiTransaction = {
   date: string;
   categoryId: string | null;
   category: Category | null;
+  creditCardId: string | null;
+  creditCard: CreditCard | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -23,6 +26,7 @@ function toTransaction(api: ApiTransaction): Transaction {
     id: api.id,
     amount: api.amount,
     category: api.category,
+    creditCard: api.creditCard,
     type: api.type,
     description: api.description,
     date: api.date,
@@ -45,6 +49,7 @@ export async function createMovimiento(_uid: string, input: TransactionInput): P
       description: input.description,
       date: input.date,
       categoryId: input.category?.id ?? null,
+      creditCardId: input.creditCard?.id ?? null,
     }),
   });
   return toTransaction(data);
@@ -63,6 +68,7 @@ export async function updateMovimiento(
       ...(changes.description !== undefined ? { description: changes.description } : {}),
       ...(changes.date !== undefined ? { date: changes.date } : {}),
       ...(changes.category !== undefined ? { categoryId: changes.category?.id ?? null } : {}),
+      ...(changes.creditCard !== undefined ? { creditCardId: changes.creditCard?.id ?? null } : {}),
     }),
   });
   return toTransaction(data);
@@ -88,6 +94,7 @@ export async function importMovimientos(_uid: string, transactions: Transaction[
         description: t.description,
         date: t.date,
         categoryId: t.category?.id ?? null,
+        creditCardId: t.creditCard?.id ?? null,
         createdAt: t.createdAt,
       })),
     }),
