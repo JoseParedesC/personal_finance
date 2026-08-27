@@ -204,6 +204,16 @@ export function Layout({ page, onNavigate, user, onLogout, children }: LayoutPro
         <main className="min-w-0 flex-1">{children}</main>
       </div>
 
+      {/* Acción flotante móvil: permite agregar movimientos desde cualquier pantalla. */}
+      <button
+        type="button"
+        onClick={() => setIsAddOpen(true)}
+        aria-label="Agregar nuevo movimiento"
+        className="fixed bottom-5 right-5 z-40 inline-flex h-14 w-14 items-center justify-center rounded-full bg-ink text-paper shadow-lg ring-4 ring-paper/90 transition-transform hover:scale-105 active:scale-95 sm:hidden"
+      >
+        <Plus size={24} strokeWidth={2.25} />
+      </button>
+
       {/* El menú móvil sustituye la barra inferior para evitar desbordes y mantener todos los destinos accesibles. */}
       <Modal isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} title="Nuevo movimiento">
         <TransactionForm
