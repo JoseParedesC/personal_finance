@@ -43,16 +43,22 @@ const CONFIG_ITEMS: { id: Page; label: string; icon: typeof LayoutDashboard }[] 
 export function Layout({ page, onNavigate, user, onLogout, children }: LayoutProps) {
   const { add } = useTransactionManager();
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const handleNavigate = (nextPage: Page) => {
+    onNavigate(nextPage);
+    setIsMobileMenuOpen(false);
+  };
 
   return (
-    <div className="min-h-screen bg-paper">
+    <div className="min-h-screen overflow-x-hidden bg-paper">
       <header className="sticky top-0 z-30 border-b border-line bg-paper/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-ink text-paper">
               <Wallet size={16} />
             </div>
-            <p className="font-display text-lg font-semibold text-ink">
+            <p className="hidden font-display text-lg font-semibold text-ink sm:block">
               Finanzas personales
             </p>
           </div>
@@ -92,13 +98,77 @@ export function Layout({ page, onNavigate, user, onLogout, children }: LayoutPro
         </div>
       </header>
 
-      <div className="mx-auto flex max-w-6xl gap-6 px-4 pb-24 pt-6 sm:px-6 lg:pb-10">
+      <div className="mx-auto max-w-6xl px-4 pt-4 sm:px-6 lg:pt-6">
+        <div className="lg:hidden">
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen((open) => !open)}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-navigation"
+            className="flex w-full items-center justify-between rounded-xl border border-line bg-surface px-4 py-3 text-left shadow-sm"
+          >
+            <span className="flex min-w-0 items-center gap-2.5">
+              {(() => {
+                const current = [...NAV_ITEMS, ...CONFIG_ITEMS].find((item) => item.id === page);
+                const CurrentIcon = current?.icon ?? LayoutDashboard;
+                return <CurrentIcon size={18} className="shrink-0 text-ink" />;
+              })()}
+              <span className="truncate text-sm font-semibold text-ink">
+                {[...NAV_ITEMS, ...CONFIG_ITEMS].find((item) => item.id === page)?.label ?? "Menú"}
+              </span>
+            </span>
+            <span className="ml-3 shrink-0 text-xs font-medium text-slate">
+              {isMobileMenuOpen ? "Cerrar" : "Abrir menú"}
+            </span>
+          </button>
+
+          {isMobileMenuOpen && (
+            <nav
+              id="mobile-navigation"
+              aria-label="Navegación principal"
+              className="mt-2 max-h-[60vh] overflow-y-auto overscroll-contain rounded-xl border border-line bg-surface p-2 shadow-card"
+            >
+              <div className="grid gap-1 sm:grid-cols-2">
+                {NAV_ITEMS.map(({ id, label, icon: Icon }) => (
+                  <button
+                    key={id}
+                    onClick={() => handleNavigate(id)}
+                    className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors ${
+                      page === id ? "bg-ink text-paper" : "text-slate hover:bg-mist hover:text-ink"
+                    }`}
+                  >
+                    <Icon size={17} />
+                    {label}
+                  </button>
+                ))}
+                <div className="px-3 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate sm:col-span-2">
+                  Configuración
+                </div>
+                {CONFIG_ITEMS.map(({ id, label, icon: Icon }) => (
+                  <button
+                    key={id}
+                    onClick={() => handleNavigate(id)}
+                    className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors ${
+                      page === id ? "bg-ink text-paper" : "text-slate hover:bg-mist hover:text-ink"
+                    }`}
+                  >
+                    <Icon size={17} />
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </nav>
+          )}
+        </div>
+      </div>
+
+      <div className="mx-auto flex max-w-6xl gap-6 px-4 pb-24 pt-4 sm:px-6 lg:pb-10 lg:pt-6">
         <nav className="hidden w-48 shrink-0 lg:block">
           <ul className="sticky top-24 flex flex-col gap-1">
             {NAV_ITEMS.map(({ id, label, icon: Icon }) => (
               <li key={id}>
                 <button
-                  onClick={() => onNavigate(id)}
+                  onClick={() => handleNavigate(id)}
                   className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                     page === id
                       ? "bg-ink text-paper"
@@ -116,7 +186,7 @@ export function Layout({ page, onNavigate, user, onLogout, children }: LayoutPro
             {CONFIG_ITEMS.map(({ id, label, icon: Icon }) => (
               <li key={id}>
                 <button
-                  onClick={() => onNavigate(id)}
+                  onClick={() => handleNavigate(id)}
                   className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                     page === id
                       ? "bg-ink text-paper"
@@ -134,41 +204,7 @@ export function Layout({ page, onNavigate, user, onLogout, children }: LayoutPro
         <main className="min-w-0 flex-1">{children}</main>
       </div>
 
-      {/* Navegación inferior para móvil */}
-      <nav className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-around border-t border-line bg-surface py-2 lg:hidden">
-        {NAV_ITEMS.map(({ id, label, icon: Icon }) => (
-          <button
-            key={id}
-            onClick={() => onNavigate(id)}
-            className={`flex flex-col items-center gap-1 px-4 py-1 text-xs font-medium ${
-              page === id ? "text-ink" : "text-slate"
-            }`}
-          >
-            <Icon size={18} />
-            {label}
-          </button>
-        ))}
-        {CONFIG_ITEMS.map(({ id, label, icon: Icon }) => (
-          <button
-            key={id}
-            onClick={() => onNavigate(id)}
-            className={`flex flex-col items-center gap-1 px-2 py-1 text-xs font-medium ${
-              page === id ? "text-ink" : "text-slate"
-            }`}
-          >
-            <Icon size={18} />
-            {label}
-          </button>
-        ))}
-        <button
-          onClick={() => setIsAddOpen(true)}
-          aria-label="Nuevo movimiento"
-          className="flex h-11 w-11 -translate-y-4 items-center justify-center rounded-full bg-ink text-paper shadow-card"
-        >
-          <Plus size={20} />
-        </button>
-      </nav>
-
+      {/* El menú móvil sustituye la barra inferior para evitar desbordes y mantener todos los destinos accesibles. */}
       <Modal isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} title="Nuevo movimiento">
         <TransactionForm
           onCancel={() => setIsAddOpen(false)}
