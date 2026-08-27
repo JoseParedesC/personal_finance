@@ -7,6 +7,7 @@ import { MasterSelector } from "@joseparedesc/master-components";
 import { Category } from "../../categories/types/category";
 import { createMasterSelectorService } from "../../../shared/services/master-selector";
 import { useAuth } from "../../auth/context/AuthContext";
+import { useCreditCards } from "../../credit-cards/hooks/useCreditCards";
 
 interface TransactionFormProps {
   initial?: Transaction | null;
@@ -28,11 +29,12 @@ export function TransactionForm({
   submitLabel = "Agregar movimiento",
 }: TransactionFormProps) {
   const { user } = useAuth();
+  const { cards } = useCreditCards();
   const [type, setType] = useState<TransactionType>(initial?.type ?? "income");
   const [category, setCategory] = useState<Category | null>(null);
+  const [creditCardId, setCreditCardId] = useState<string>(initial?.creditCard?.id ?? "");
   const [amount, setAmount] = useState<string>(
-    initial ? String(initial.amount) : ""
-  );
+    initial ? String(initial.amount) : "");
   const [description, setDescription] = useState(initial?.description ?? "");
   const [date, setDate] = useState(initial?.date ?? todayISO());
   const [errors, setErrors] = useState<FormErrors>({});
@@ -46,9 +48,12 @@ export function TransactionForm({
     [user, type]
   );
 
+  const activeCards = useMemo(() => cards.filter((c) => c.active), [cards]);
+
   function handleTypeChange(nextType: TransactionType) {
     setType(nextType);
     setCategory(null);
+    if (nextType === "income") setCreditCardId("");
   }
 
   function validate(): FormErrors {
@@ -72,16 +77,19 @@ export function TransactionForm({
     setErrors(validation);
     if (Object.keys(validation).length > 0) return;
 
+    const selectedCard = creditCardId ? activeCards.find((c) => c.id === creditCardId) ?? null : null;
+
     try {
       await onSubmit({
         type,
         category,
+        creditCard: selectedCard,
         amount: Math.abs(Number(amount)),
         description: description.trim(),
         date,
       });
     } catch (error) {
-      console.error("No se pudo guardar el movimiento en Firestore", error);
+      console.error("No se pudo guardar el movimiento", error);
       return;
     }
 
@@ -90,7 +98,8 @@ export function TransactionForm({
       setDescription("");
       setDate(todayISO());
       setType("income");
-      setCategory(null)
+      setCategory(null);
+      setCreditCardId("");
     }
   }
 
@@ -143,6 +152,23 @@ export function TransactionForm({
           )}
         </div>
       </Field>
+
+      {type === "expense" && activeCards.length > 0 && (
+        <Field label="Pagado con tarjeta de crédito (opcional)">
+          <select
+            value={creditCardId}
+            onChange={(e) => setCreditCardId(e.target.value)}
+            className="w-full rounded-lg border border-line bg-surface px-3 py-2.5 text-sm text-ink outline-none focus:border-ink"
+          >
+            <option value="">No / efectivo o transferencia</option>
+            {activeCards.map((card) => (
+              <option key={card.id} value={card.id}>
+                {card.name}
+              </option>
+            ))}
+          </select>
+        </Field>
+      )}
 
       <Field label="Valor" error={errors.amount} htmlFor="amount">
         <div className="relative">
