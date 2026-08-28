@@ -11,6 +11,7 @@ import { Budgets } from "./modules/budgets/Budgets";
 import { Pockets } from "./modules/pockets/Pockets";
 import { LoginPage } from "./modules/auth/components/LoginPage";
 import { Investments } from "./modules/investments/Investments";
+import { InvestmentMasterPage } from "./modules/investments/InvestmentMasterPage";
 import { useAuth } from "./modules/auth/context/AuthContext";
 
 const PAGES: Record<Page, () => JSX.Element | null> = {
@@ -23,6 +24,7 @@ const PAGES: Record<Page, () => JSX.Element | null> = {
   budgets: Budgets,
   pockets: Pockets,
   investments: Investments,
+  "investment-master": InvestmentMasterPage,
 };
 
 export default function App() {

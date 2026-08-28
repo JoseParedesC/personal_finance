@@ -4,7 +4,6 @@ import { useAuth } from '../auth/context/AuthContext';
 import { Modal } from '../../shared/components/Modal';
 import { Button } from '../../shared/components/Button';
 import { Card } from '../../shared/components/Card';
-import { InvestmentMaster } from './components/InvestmentMaster';
 import { createOperation, createValuation, getInvestments, getInvestmentSummary, getOperations, getValuations } from './services/investments.service';
 import type { Investment, InvestmentOperation, InvestmentValuation, OperationType } from './types/investment';
 import { InvestmentOperationForm } from './components/InvestmentOperationForm';
@@ -52,16 +51,13 @@ export function Investments() {
   return <div className="space-y-6">
     <div>
       <h2 className="font-display text-xl font-semibold text-ink">Inversiones</h2>
-      <p className="text-sm text-slate">Administra el maestro y consulta operaciones y rentabilidad.</p>
+      <p className="text-sm text-slate">Gestiona las operaciones y consulta la rentabilidad de tus inversiones.</p>
     </div>
 
-    {/* Maestro: implementación explícita con @joseparedesc/master-crud */}
-    <InvestmentMaster />
-
-    <div className="border-t border-line pt-6">
+    <div>
       <div className="mb-4">
         <h3 className="font-display text-lg font-semibold text-ink">Operaciones y rentabilidad</h3>
-        <p className="text-sm text-slate">Selecciona una inversión del maestro para registrar operaciones y revisar su resultado.</p>
+        <p className="text-sm text-slate">Selecciona una inversión configurada para registrar operaciones y revisar su resultado.</p>
       </div>
       <div className="space-y-4">
         <div className="flex flex-wrap items-end gap-3">
