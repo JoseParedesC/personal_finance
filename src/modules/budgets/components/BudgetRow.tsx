@@ -14,8 +14,20 @@ export function BudgetRow({ budget, onUpdateLimit, onDelete }: BudgetRowProps) {
   const [draftLimit, setDraftLimit] = useState(String(budget.limitAmount));
   const [isSaving, setIsSaving] = useState(false);
 
+  const isIncome = budget.type === "income";
   const progress = Math.min(1, budget.percentageUsed / 100);
-  const barColor = budget.isOverBudget ? "bg-clay" : budget.percentageUsed >= 80 ? "bg-amber-500" : "bg-ink";
+  // Gasto: pasarse del tope es malo (rojo). Ingreso: alcanzar/superar la meta es bueno (verde).
+  const barColor = isIncome
+    ? budget.isOverBudget || budget.percentageUsed >= 100
+      ? "bg-moss"
+      : budget.percentageUsed >= 50
+        ? "bg-amber-500"
+        : "bg-clay"
+    : budget.isOverBudget
+      ? "bg-clay"
+      : budget.percentageUsed >= 80
+        ? "bg-amber-500"
+        : "bg-ink";
 
   async function handleSave() {
     const value = Number(draftLimit);
@@ -66,10 +78,12 @@ export function BudgetRow({ budget, onUpdateLimit, onDelete }: BudgetRowProps) {
             </>
           ) : (
             <>
-              <span className="text-sm text-slate">Tope: {formatCurrency(budget.limitAmount)}</span>
+              <span className="text-sm text-slate">
+                {isIncome ? "Meta" : "Tope"}: {formatCurrency(budget.limitAmount)}
+              </span>
               <button
                 onClick={() => setIsEditing(true)}
-                aria-label="Editar tope"
+                aria-label="Editar"
                 className="rounded-full p-1.5 text-slate hover:bg-mist"
               >
                 <Pencil size={14} />
@@ -91,11 +105,17 @@ export function BudgetRow({ budget, onUpdateLimit, onDelete }: BudgetRowProps) {
       </div>
 
       <div className="mt-1.5 flex justify-between text-xs text-slate">
-        <span className={budget.isOverBudget ? "font-medium text-clay" : ""}>
-          Gastado: {formatCurrency(budget.spent)} ({budget.percentageUsed.toFixed(0)}%)
+        <span className={!isIncome && budget.isOverBudget ? "font-medium text-clay" : ""}>
+          {isIncome ? "Real" : "Gastado"}: {formatCurrency(budget.actual)} ({budget.percentageUsed.toFixed(0)}%)
         </span>
         <span>
-          {budget.isOverBudget ? "Excedido en " : "Restante: "}
+          {isIncome
+            ? budget.remaining <= 0
+              ? "Superávit: "
+              : "Faltante: "
+            : budget.isOverBudget
+              ? "Excedido en "
+              : "Restante: "}
           {formatCurrency(Math.abs(budget.remaining))}
         </span>
       </div>

@@ -590,12 +590,19 @@ $200.000</code></pre>
 <blockquote>No afecta presupuesto</blockquote>
 <p>queda fuera de esos topes para sus gastos.</p>
 <h2>11.1. Presupuesto mensual de ingresos</h2>
-<p>El módulo de presupuestos también puede manejar el tipo <strong>Ingreso</strong>, además del tipo <strong>Gasto</strong>.</p>
+<p>El módulo de presupuestos maneja dos tipos independientes: <strong>Ingreso</strong> y <strong>Gasto</strong>. La pantalla de Presupuesto mensual muestra ambas secciones por separado, cada una con su propio botón para crear metas/topes.</p>
+<p>Para una meta de ingreso, los indicadores cambian de nombre respecto a un tope de gasto:</p>
+<ul>
+<li><strong>Meta</strong> (equivalente a &quot;Tope&quot; en gastos).</li>
+<li><strong>Real</strong> (equivalente a &quot;Gastado&quot;).</li>
+<li><strong>Faltante</strong> mientras no se alcanza la meta, o <strong>Superávit</strong> al alcanzarla o superarla.</li>
+</ul>
 <p>Ejemplo:</p>
-<pre><code>Ingresos presupuestados   $4.800.000
-Ingresos reales           $4.500.000
-Faltante                    $300.000</code></pre>
-<p>El presupuesto de ingresos permite comparar las metas mensuales con los ingresos reales. Las transferencias entre espacios propios y los movimientos de inversión no deben tratarse como ingresos por el solo hecho de mover dinero.</p>
+<pre><code>Meta de ingreso (Salario)   $4.800.000
+Ingresos reales             $4.500.000
+Faltante                      $300.000</code></pre>
+<p>A diferencia de un gasto (donde superar el tope es una alerta), en una meta de ingreso alcanzar o superar el monto se muestra en verde, como una señal positiva.</p>
+<p>El presupuesto de ingresos permite comparar las metas mensuales con los ingresos reales. Las transferencias entre espacios propios y los movimientos de inversión <strong>no</strong> deben tratarse como ingresos por el solo hecho de mover dinero: solo un movimiento real de tipo Ingreso participa en el cálculo.</p>
 <hr>
 <h1>12. Deudas</h1>
 <p>La aplicación incluye una sección:</p>
@@ -1056,6 +1063,12 @@ de Inversiones.</p>
 <p>La capa de importación/exportación debe mantener formatos compatibles y validar
 la estructura antes de persistir información. JSON es apropiado para respaldos
 estructurados; CSV facilita interoperabilidad con hojas de cálculo.</p>
+
+<h2>Presupuesto: ingresos y gastos</h2>
+<p><code>Budget.type</code> distingue <code>income</code> de <code>expense</code>, con unicidad
+<code>(userId, categoryId, month, type)</code>. El backend valida que la categoría del
+presupuesto tenga el mismo <code>movementType</code> que el <code>type</code> del presupuesto.
+Detalle completo en <code>documentation/docs/README_GUIA_PRESUPUESTO_INGRESOS.md</code>.</p>
 
 <h2>Consideraciones de desarrollo</h2>
 <ul>

@@ -1,8 +1,11 @@
 import { apiFetch } from "../../../shared/services/api";
-import type { Budget, BudgetInput, BudgetSummary } from "../types/budget";
+import type { Budget, BudgetInput, BudgetSummary, BudgetType } from "../types/budget";
 
-export function getBudgets(month?: string): Promise<Budget[]> {
-  const query = month ? `?month=${encodeURIComponent(month)}` : "";
+export function getBudgets(month?: string, type?: BudgetType): Promise<Budget[]> {
+  const params = new URLSearchParams();
+  if (month) params.set("month", month);
+  if (type) params.set("type", type);
+  const query = params.toString() ? `?${params.toString()}` : "";
   return apiFetch<Budget[]>(`/budgets${query}`);
 }
 
