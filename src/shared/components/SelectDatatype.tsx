@@ -22,12 +22,14 @@ export function SelectDataType({
     <Modal isOpen={isOpen} onClose={onCancel} title={title}>
       <p className="text-sm text-slate leading-relaxed">{message}</p>
       <div className="mt-6 flex justify-end gap-3">
-        <Button variant="secondary" onClick={onCancel}>
-          Excel (CSV)
-        </Button>
-        <Button variant="secondary" onClick={onCancel}>
-          JSON
-        </Button>
+        <hr>
+          <Button variant="success" onClick={onCancel}>
+            Excel (CSV)
+          </Button>
+          <Button variant="option" onClick={onCancel}>
+            JSON
+          </Button>
+        </hr>
         <Button variant="secondary" onClick={onCancel}>
           Cancelar
         </Button>
