@@ -38,5 +38,12 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
     throw new Error(body?.message ?? `Error de red (${response.status})`);
   }
   if (response.status === 204) return undefined as T;
+
+  const text = await response.text();
+
+  if (!text.trim()) {
+    return undefined as T;
+  }
+
   return response.json() as Promise<T>;
 }
