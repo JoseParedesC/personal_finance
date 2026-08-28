@@ -1,5 +1,5 @@
 import { useRef, useState, type ChangeEvent } from "react";
-import { Download, Upload } from "lucide-react";
+import { ChevronDown, Download, Upload } from "lucide-react";
 import type { Transaction } from "../types/transaction";
 import { Button } from "./Button";
 import { ConfirmDialog } from "./ConfirmDialog";
@@ -195,6 +195,7 @@ export function ExportImport({ transactions, onImport }: ExportImportProps) {
   const [pendingImport, setPendingImport] = useState<Transaction[] | null>(null);
   const [importFormat, setImportFormat] = useState<"JSON" | "CSV">("JSON");
   const [error, setError] = useState<string | null>(null);
+  const [showExportOptions, setShowExportOptions] = useState(false);
 
   function downloadFile(content: string, filename: string, type: string) {
     const blob = new Blob([content], { type });
@@ -257,17 +258,54 @@ export function ExportImport({ transactions, onImport }: ExportImportProps) {
   return (
     <div className="flex flex-col items-end gap-2">
       <div className="flex flex-wrap items-center justify-end gap-2">
-        <Button variant="secondary" onClick={handleExportJson}>
-          <Download size={15} />
-          Exportar JSON
-        </Button>
-        <Button variant="secondary" onClick={handleExportCsv}>
-          <Download size={15} />
-          Exportar CSV
-        </Button>
+        <div className="relative">
+          <Button
+            variant="secondary"
+            onClick={() => setShowExportOptions((current) => !current)}
+            aria-expanded={showExportOptions}
+            aria-haspopup="menu"
+          >
+            <Download size={15} />
+            Exportar
+            <ChevronDown size={15} className={showExportOptions ? "rotate-180 transition-transform" : "transition-transform"} />
+          </Button>
+
+          {showExportOptions && (
+            <div
+              className="absolute right-0 z-20 mt-2 min-w-36 rounded-lg border border-slate-200 bg-white p-1 shadow-lg dark:border-slate-700 dark:bg-slate-800"
+              role="menu"
+            >
+              <button
+                type="button"
+                role="menuitem"
+                className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-700"
+                onClick={() => {
+                  handleExportJson();
+                  setShowExportOptions(false);
+                }}
+              >
+                <Download size={14} />
+                JSON
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-700"
+                onClick={() => {
+                  handleExportCsv();
+                  setShowExportOptions(false);
+                }}
+              >
+                <Download size={14} />
+                CSV
+              </button>
+            </div>
+          )}
+        </div>
+
         <Button variant="secondary" onClick={() => fileInputRef.current?.click()}>
           <Upload size={15} />
-          Importar JSON / CSV
+          Importar
         </Button>
       </div>
 
