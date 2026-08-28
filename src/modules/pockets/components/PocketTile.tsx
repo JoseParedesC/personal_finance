@@ -1,4 +1,4 @@
-import { Wallet, Pencil, Power, Trash2, ShieldOff } from "lucide-react";
+import { Wallet, Pencil, Power, Trash2, ShieldOff, ArrowDownToLine } from "lucide-react";
 import { formatCurrency } from "../../../shared/utils/currency";
 import type { Pocket } from "../types/pocket";
 
@@ -7,9 +7,10 @@ interface PocketTileProps {
   onEdit: () => void;
   onToggleActive: () => void;
   onDelete: () => void;
+  onFund: () => void;
 }
 
-export function PocketTile({ pocket, onEdit, onToggleActive, onDelete }: PocketTileProps) {
+export function PocketTile({ pocket, onEdit, onToggleActive, onDelete, onFund }: PocketTileProps) {
   return (
     <div className="flex flex-col gap-4 rounded-xl2 border border-line bg-surface p-5 shadow-soft">
       <div className="flex items-start justify-between">
@@ -57,6 +58,14 @@ export function PocketTile({ pocket, onEdit, onToggleActive, onDelete }: PocketT
       </div>
 
       {!pocket.active && <span className="w-fit rounded-full bg-mist px-2 py-0.5 text-xs text-slate">Inactivo</span>}
+
+      <button
+        onClick={onFund}
+        className="inline-flex items-center justify-center gap-1.5 rounded-full bg-mist px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-line"
+      >
+        <ArrowDownToLine size={14} />
+        Cargar bolsillo
+      </button>
     </div>
   );
 }

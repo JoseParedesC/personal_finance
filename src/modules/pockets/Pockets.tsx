@@ -1,16 +1,37 @@
-import { useState } from "react";
-import { Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowLeftRight, Plus } from "lucide-react";
 import { Modal } from "../../shared/components/Modal";
 import { Button } from "../../shared/components/Button";
+import { formatCurrency } from "../../shared/utils/currency";
 import { usePockets } from "./hooks/usePockets";
+import { getTransfers } from "./services/pockets.service";
 import { PocketForm } from "./components/PocketForm";
 import { PocketTile } from "./components/PocketTile";
-import type { Pocket, PocketInput } from "./types/pocket";
+import { TransferForm } from "./components/TransferForm";
+import { TransferHistory } from "./components/TransferHistory";
+import type { Pocket, PocketInput, PocketTransfer, TransferInput } from "./types/pocket";
 
 export function Pockets() {
-  const { pockets, isLoading, error, clearError, createPocket, updatePocket, deletePocket } = usePockets();
+  const { pockets, general, isLoading, error, clearError, createPocket, updatePocket, deletePocket, transfer } =
+    usePockets();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingPocket, setEditingPocket] = useState<Pocket | null>(null);
+  const [transferTarget, setTransferTarget] = useState<{ toPocketId?: string } | null>(null);
+  const [transfers, setTransfers] = useState<PocketTransfer[]>([]);
+  const [isLoadingTransfers, setIsLoadingTransfers] = useState(true);
+
+  async function loadTransfers() {
+    setIsLoadingTransfers(true);
+    try {
+      setTransfers(await getTransfers());
+    } finally {
+      setIsLoadingTransfers(false);
+    }
+  }
+
+  useEffect(() => {
+    void loadTransfers();
+  }, []);
 
   function openCreate() {
     setEditingPocket(null);
@@ -41,6 +62,12 @@ export function Pockets() {
     }
   }
 
+  async function handleTransfer(input: TransferInput) {
+    await transfer(input);
+    setTransferTarget(null);
+    await loadTransfers();
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -48,11 +75,26 @@ export function Pockets() {
           <h2 className="font-display text-xl font-semibold text-ink">Bolsillos</h2>
           <p className="text-sm text-slate">Cuentas independientes para organizar tus movimientos.</p>
         </div>
-        <Button onClick={openCreate}>
-          <Plus size={15} />
-          Nuevo bolsillo
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="secondary" onClick={() => setTransferTarget({})}>
+            <ArrowLeftRight size={15} />
+            Transferir
+          </Button>
+          <Button onClick={openCreate}>
+            <Plus size={15} />
+            Nuevo bolsillo
+          </Button>
+        </div>
       </div>
+
+      {general && (
+        <div className="rounded-xl2 border border-line bg-surface p-5 shadow-soft">
+          <p className="text-xs text-slate">Cuenta principal (fondos sin asignar a un bolsillo)</p>
+          <p className={`mt-1 font-display text-2xl font-semibold ${general.balance < 0 ? "text-clay" : "text-ink"}`}>
+            {formatCurrency(general.balance)}
+          </p>
+        </div>
+      )}
 
       {error && (
         <div className="flex items-center justify-between rounded-lg bg-clay-light px-4 py-3 text-sm text-clay">
@@ -81,8 +123,16 @@ export function Pockets() {
               onEdit={() => openEdit(pocket)}
               onToggleActive={() => void updatePocket(pocket.id, { active: !pocket.active })}
               onDelete={() => void handleDelete(pocket)}
+              onFund={() => setTransferTarget({ toPocketId: pocket.id })}
             />
           ))}
+        </div>
+      )}
+
+      {!isLoading && (
+        <div className="rounded-xl2 border border-line bg-surface p-5 shadow-soft">
+          <h3 className="mb-1 font-display text-base font-semibold text-ink">Historial de transferencias</h3>
+          <TransferHistory transfers={transfers} isLoading={isLoadingTransfers} />
         </div>
       )}
 
@@ -92,6 +142,16 @@ export function Pockets() {
         title={editingPocket ? "Editar bolsillo" : "Nuevo bolsillo"}
       >
         <PocketForm initial={editingPocket} onSubmit={handleSubmit} onCancel={() => setIsFormOpen(false)} />
+      </Modal>
+
+      <Modal isOpen={transferTarget !== null} onClose={() => setTransferTarget(null)} title="Transferencia">
+        <TransferForm
+          pockets={pockets}
+          general={general}
+          defaultToPocketId={transferTarget?.toPocketId}
+          onSubmit={handleTransfer}
+          onCancel={() => setTransferTarget(null)}
+        />
       </Modal>
     </div>
   );
