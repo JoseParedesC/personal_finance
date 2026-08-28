@@ -1198,6 +1198,7 @@ function closeDeveloperModal() {
 function verifyDeveloperAccess() {
   const password = document.getElementById("devPassword").value;
   if (password === DEVELOPER_PASSWORD) {
+    sessionStorage.setItem("developerAccess", "1");
     closeDeveloperModal();
     show("dev");
   } else {
