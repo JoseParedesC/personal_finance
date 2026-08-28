@@ -28,13 +28,13 @@ export function SelectDataType({
         <Button variant="option" onClick={onCancel}>
           JSON
         </Button>
-        <hr></hr>
+        {/* <hr></hr>
         <Button variant="secondary" onClick={onCancel}>
           Cancelar
         </Button>
         <Button variant="danger" onClick={onConfirm}>
           {confirmLabel}
-        </Button>
+        </Button> */}
       </div>
     </Modal>
   );
