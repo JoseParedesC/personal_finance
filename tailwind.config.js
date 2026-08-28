@@ -18,6 +18,8 @@ export default {
         clay: "#B4483A",
         "clay-light": "#F8E9E7",
         slate: "#5B6570",
+        "green": "#459745",
+        slate: "#3e77c7",
       },
       fontFamily: {
         display: ["'Fraunces'", "serif"],
