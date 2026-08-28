@@ -1,0 +1,784 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Finanzas Personales — Developers</title>
+<style>
+:root{--bg:#f6f7f9;--surface:#fff;--text:#1f2937;--muted:#667085;--border:#e5e7eb;--accent:#2563eb}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.65}
+header{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:5}
+nav{max-width:1000px;margin:auto;padding:16px 22px;display:flex;justify-content:space-between;gap:18px}
+nav a{color:var(--accent);text-decoration:none;font-weight:650} main{max-width:1000px;margin:auto;padding:38px 18px 70px}
+article{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:36px;box-shadow:0 2px 10px rgba(0,0,0,.035)}
+h1{font-size:2.2rem;line-height:1.15;margin-top:0} h2{margin-top:40px;border-bottom:1px solid var(--border);padding-bottom:7px}
+pre{background:#111827;color:#f9fafb;padding:18px;border-radius:9px;overflow:auto} code{background:#f1f3f5;padding:2px 5px;border-radius:5px}
+pre code{background:transparent;padding:0} footer{text-align:center;color:var(--muted);padding:25px;border-top:1px solid var(--border)}
+@media(max-width:700px){article{padding:23px 17px}h1{font-size:1.8rem}}
+</style></head><body>
+<header><nav><a href="index_guide.html">Finanzas Personales</a><span>Developers</span></nav></header>
+<main><article><h1>Guía funcional — Finanzas Personales</h1>
+<p>&gt; Documento de referencia para usuarios, producto y desarrollo.</p>
+<p>&gt;</p>
+<p>&gt; Este README describe las funcionalidades visibles y el flujo de uso de los proyectos de <strong>frontend</strong> y <strong>backend</strong> entregados para la aplicación de finanzas personales.</p>
+<hr>
+<h2>1. ¿Qué es la aplicación?</h2>
+<p>Es una aplicación para controlar las finanzas personales desde un único lugar.</p>
+<p>Permite:</p>
+<ul>
+<li>Registrar ingresos y gastos.</li>
+<li>Asociar movimientos a categorías.</li>
+<li>Separar dinero mediante bolsillos.</li>
+<li>Transferir dinero entre la cuenta principal y bolsillos.</li>
+<li>Controlar presupuestos de gastos e ingresos.</li>
+<li>Gestionar inversiones y consultar su rentabilidad.</li>
+<li>Registrar deudas.</li>
+<li>Gestionar tarjetas de crédito y sus pagos.</li>
+<li>Consultar saldos y resúmenes.</li>
+<li>Analizar el flujo financiero mediante gráficos.</li>
+<li>Filtrar y buscar movimientos.</li>
+<li>Importar y exportar información de movimientos.</li>
+<li>Trabajar con una interfaz responsive para escritorio, tablet y móvil.</li>
+<li>Mantener los datos asociados al usuario autenticado.</li>
+</ul>
+<hr>
+<h1>2. Conceptos fundamentales</h1>
+<p>Antes de utilizar la aplicación conviene diferenciar estos conceptos:</p>
+<h3>Movimiento</h3>
+<p>Representa una operación financiera real.</p>
+<p>Puede ser:</p>
+<ul>
+<li><strong>Ingreso</strong> → dinero que recibes.</li>
+<li><strong>Gasto</strong> → dinero que consumes.</li>
+</ul>
+<p>Ejemplos:</p>
+<ul>
+<li>Salario → ingreso.</li>
+<li>Mercado → gasto.</li>
+<li>Netflix → gasto.</li>
+<li>Venta de un producto → ingreso.</li>
+</ul>
+<h3>Cuenta principal</h3>
+<p>Representa el dinero que no está asignado a un bolsillo.</p>
+<p>En la interfaz de bolsillos aparece como:</p>
+<p>&gt; <strong>Cuenta principal (fondos sin asignar a un bolsillo)</strong></p>
+<h3>Bolsillo</h3>
+<p>Es una separación lógica de dinero para organizarlo.</p>
+<p>Ejemplos:</p>
+<ul>
+<li>Ahorros</li>
+<li>Mercado</li>
+<li>Viaje</li>
+<li>Emergencias</li>
+<li>Casa</li>
+</ul>
+<p>Un bolsillo tiene su propio saldo y estadísticas.</p>
+<h3>Transferencia</h3>
+<p>Es un movimiento de dinero <strong>entre espacios propios de la aplicación</strong>.</p>
+<p>Ejemplos:</p>
+<ul>
+<li>Cuenta principal → Ahorros.</li>
+<li>Ahorros → Cuenta principal.</li>
+<li>Ahorros → Viaje.</li>
+</ul>
+<p>Una transferencia <strong>no es un ingreso ni un gasto</strong>.</p>
+<hr>
+<h1>3. Inicio de sesión</h1>
+<p>La aplicación requiere una sesión de usuario.</p>
+<p>El flujo general es:</p>
+<p>1. Abrir la aplicación.</p>
+<p>2. Iniciar sesión.</p>
+<p>3. La aplicación comprueba la sesión.</p>
+<p>4. Si existe un usuario autenticado, se muestra la aplicación.</p>
+<p>5. Si no existe, se muestra la pantalla de acceso.</p>
+<p>La sesión se gestiona mediante autenticación y el backend recibe el token de acceso para identificar al usuario.</p>
+<hr>
+<h1>4. Dashboard</h1>
+<p>El Dashboard es la vista general de la situación financiera.</p>
+<p>Su objetivo es permitir una lectura rápida de:</p>
+<ul>
+<li>Saldo.</li>
+<li>Ingresos.</li>
+<li>Gastos.</li>
+<li>Evolución general de las finanzas.</li>
+</ul>
+<p>Es la pantalla recomendada para consultar rápidamente cómo está la situación financiera antes de entrar al detalle.</p>
+<hr>
+<h1>5. Movimientos</h1>
+<h2>5.1. ¿Qué es un movimiento?</h2>
+<p>Cada operación de dinero debe registrarse como un movimiento cuando corresponde a un ingreso o gasto real.</p>
+<p>El formulario permite manejar:</p>
+<ul>
+<li>Tipo.</li>
+<li>Categoría.</li>
+<li>Bolsillo.</li>
+<li>Tarjeta de crédito.</li>
+<li>Valor.</li>
+<li>Detalle.</li>
+<li>Fecha.</li>
+</ul>
+<hr>
+<h2>5.2. Registrar un ingreso</h2>
+<p>Seleccionar:</p>
+<p><strong>Tipo → Ingreso</strong></p>
+<p>Después:</p>
+<p>1. Elegir categoría.</p>
+<p>2. Opcionalmente seleccionar un bolsillo.</p>
+<p>3. Introducir el valor.</p>
+<p>4. Escribir el detalle.</p>
+<p>5. Seleccionar la fecha.</p>
+<p>6. Guardar.</p>
+<p>Ejemplo:</p>
+<pre><code>Tipo:       Ingreso
+Categoría:  Salario
+Bolsillo:   Cuenta principal
+Valor:      $4.000.000
+Detalle:    Salario agosto
+Fecha:      2026-08-27</code></pre>
+<hr>
+<h2>5.3. Registrar un gasto</h2>
+<p>Seleccionar:</p>
+<p><strong>Tipo → Gasto</strong></p>
+<p>Después:</p>
+<p>1. Elegir categoría.</p>
+<p>2. Opcionalmente seleccionar un bolsillo.</p>
+<p>3. Opcionalmente indicar que fue pagado con una tarjeta de crédito.</p>
+<p>4. Introducir el valor.</p>
+<p>5. Escribir el detalle.</p>
+<p>6. Seleccionar la fecha.</p>
+<p>7. Guardar.</p>
+<p>Ejemplo:</p>
+<pre><code>Tipo:       Gasto
+Categoría:  Alimentación
+Bolsillo:   Mercado
+Valor:      $180.000
+Detalle:    Compra supermercado
+Fecha:      2026-08-27</code></pre>
+<hr>
+<h2>5.4. Cuenta principal vs bolsillo</h2>
+<p>Si el campo <strong>Bolsillo</strong> queda vacío:</p>
+<p>&gt; El movimiento se registra en la cuenta principal.</p>
+<p>Si se selecciona un bolsillo:</p>
+<p>&gt; El movimiento se asocia a ese bolsillo.</p>
+<p>La aplicación ofrece la opción:</p>
+<p>&gt; Cuenta principal (sin bolsillo)</p>
+<p>cuando existen bolsillos activos.</p>
+<hr>
+<h2>5.5. Tarjeta de crédito</h2>
+<p>Para un gasto existe un campo opcional:</p>
+<p>&gt; Pagado con tarjeta de crédito</p>
+<p>Si no se selecciona una tarjeta:</p>
+<p>&gt; No se vincula el gasto a una tarjeta.</p>
+<p>Si se selecciona una tarjeta activa:</p>
+<p>&gt; El movimiento queda asociado a esa tarjeta.</p>
+<hr>
+<h2>5.6. Editar movimientos</h2>
+<p>Los movimientos existentes pueden editarse.</p>
+<p>La edición permite cambiar los datos del movimiento, incluyendo:</p>
+<ul>
+<li>Tipo.</li>
+<li>Categoría.</li>
+<li>Bolsillo.</li>
+<li>Tarjeta.</li>
+<li>Valor.</li>
+<li>Descripción.</li>
+<li>Fecha.</li>
+</ul>
+<p>Después de guardar, los totales derivados se actualizan.</p>
+<hr>
+<h2>5.7. Eliminar movimientos</h2>
+<p>Un movimiento puede eliminarse.</p>
+<p>La aplicación utiliza una confirmación antes de borrar para evitar eliminaciones accidentales.</p>
+<hr>
+<h2>5.8. Filtros</h2>
+<p>La sección de movimientos permite combinar filtros.</p>
+<p>Se contemplan:</p>
+<ul>
+<li>Tipo.</li>
+<li>Rango de fechas.</li>
+<li>Búsqueda por descripción.</li>
+</ul>
+<p>Esto permite localizar rápidamente movimientos concretos.</p>
+<hr>
+<h2>5.9. Agrupación por fecha</h2>
+<p>Los movimientos se presentan agrupados por fecha para facilitar la lectura del historial.</p>
+<hr>
+<h1>6. Categorías</h1>
+<p>Las categorías permiten clasificar los movimientos.</p>
+<p>La administración contempla:</p>
+<ul>
+<li>Código.</li>
+<li>Nombre.</li>
+<li>Estado.</li>
+<li>Tipo de movimiento.</li>
+</ul>
+<p>El tipo distingue categorías de:</p>
+<ul>
+<li>Ingreso.</li>
+<li>Egreso/gasto.</li>
+</ul>
+<p>La sección se encuentra dentro de:</p>
+<p><strong>Configuración → Categoría</strong></p>
+<p>Las categorías se utilizan posteriormente al registrar movimientos.</p>
+<hr>
+<h1>7. Inversiones</h1>
+<p>La aplicación separa el <strong>maestro de inversiones</strong> de las operaciones financieras.</p>
+<h2>7.1. Maestro de inversiones</h2>
+<p>Se administra desde:</p>
+<p><strong>Configuración → Inversiones</strong></p>
+<p>El maestro utiliza <code>master-crud</code> y permite gestionar datos como:</p>
+<ul>
+<li>Código.</li>
+<li>Nombre.</li>
+<li>Tipo de inversión.</li>
+<li>Institución.</li>
+<li>Moneda.</li>
+<li>Descripción.</li>
+<li>Estado activo/inactivo.</li>
+</ul>
+<p>Tipos contemplados inicialmente:</p>
+<pre><code>CDT
+Fondo de inversión
+Acción
+ETF
+Criptomoneda
+Bonos
+Cuenta remunerada
+Otro</code></pre>
+<h2>7.2. Operaciones de inversión</h2>
+<p>La funcionalidad de proceso se encuentra en:</p>
+<p><strong>Inversiones</strong></p>
+<p>Las operaciones se registran separadas del maestro. Se contemplan:</p>
+<ul>
+<li>Aporte.</li>
+<li>Retiro.</li>
+<li>Compra.</li>
+<li>Venta.</li>
+<li>Intereses.</li>
+<li>Dividendos.</li>
+<li>Comisión.</li>
+<li>Ajuste.</li>
+</ul>
+<p>Una operación puede manejar cantidad, precio unitario, valor, comisión, fecha y descripción según corresponda.</p>
+<h2>7.3. Valoraciones</h2>
+<p>Las inversiones que necesitan valoración pueden registrar un valor/precio en una fecha determinada. Esto permite conservar un historial y calcular el valor actual sin modificar las operaciones originales.</p>
+<h2>7.4. Rentabilidad</h2>
+<p>La rentabilidad se calcula a partir de las operaciones y valoraciones. El resumen puede incluir:</p>
+<ul>
+<li>Capital neto invertido.</li>
+<li>Valor actual.</li>
+<li>Ganancia realizada.</li>
+<li>Ganancia no realizada.</li>
+<li>Intereses y dividendos.</li>
+<li>Comisiones.</li>
+<li>Rentabilidad porcentual.</li>
+</ul>
+<p>Para ventas parciales se utiliza el criterio FIFO para determinar el costo de las unidades vendidas.</p>
+<h2>7.5. Inversiones y movimientos</h2>
+<p>Una inversión no debe registrarse como un gasto solamente porque se destinó dinero a ella. El traslado de dinero entre un bolsillo/cuenta y una inversión es una <strong>transferencia</strong>, no un consumo.</p>
+<p>Por ejemplo:</p>
+<pre><code>Ahorros → Inversión     $1.000.000</code></pre>
+<p>No debe aumentar el total de gastos. Los intereses y dividendos sí pueden representar rendimientos/ingresos según la regla de negocio definida para el producto.</p>
+<hr>
+<h1>8. Bolsillos</h1>
+<h2>8.1. Objetivo</h2>
+<p>Los bolsillos sirven para separar dinero y controlar diferentes objetivos o áreas financieras.</p>
+<p>Ejemplos:</p>
+<pre><code>Cuenta principal
+├── Ahorros
+├── Viaje
+├── Mercado
+└── Emergencias</code></pre>
+<hr>
+<h2>8.2. Crear un bolsillo</h2>
+<p>Ir a:</p>
+<p><strong>Bolsillos → Nuevo bolsillo</strong></p>
+<p>Datos:</p>
+<ul>
+<li>Nombre.</li>
+<li>Descripción opcional.</li>
+<li>Configuración de presupuesto.</li>
+</ul>
+<p>Ejemplo:</p>
+<pre><code>Nombre:       Viaje
+Descripción:  Dinero para vacaciones
+Afecta presupuesto: Sí</code></pre>
+<hr>
+<h2>8.3. Afecta presupuesto</h2>
+<p>Cada bolsillo tiene una configuración:</p>
+<p>&gt; <strong>Los movimientos de este bolsillo afectan el presupuesto</strong></p>
+<p>Si está activada:</p>
+<p>&gt; Los movimientos de ese bolsillo participan en el control de presupuesto.</p>
+<p>Si está desactivada:</p>
+<p>&gt; Los gastos de ese bolsillo no cuentan contra los topes mensuales.</p>
+<p>Un caso típico sería:</p>
+<pre><code>Mercado
+Afecta presupuesto: Sí
+
+Ahorros
+Afecta presupuesto: No</code></pre>
+<hr>
+<h2>8.4. Saldo del bolsillo</h2>
+<p>Cada bolsillo muestra:</p>
+<ul>
+<li>Saldo.</li>
+<li>Número de movimientos.</li>
+<li>Información de presupuesto.</li>
+<li>Estado activo/inactivo.</li>
+</ul>
+<p>También se calculan:</p>
+<ul>
+<li>Total de ingresos.</li>
+<li>Total de gastos.</li>
+<li>Transferencias recibidas.</li>
+<li>Transferencias enviadas.</li>
+</ul>
+<hr>
+<h2>8.5. Editar bolsillo</h2>
+<p>Se puede modificar:</p>
+<ul>
+<li>Nombre.</li>
+<li>Descripción.</li>
+<li>Configuración de presupuesto.</li>
+</ul>
+<hr>
+<h2>8.6. Activar/desactivar bolsillo</h2>
+<p>Un bolsillo puede marcarse como:</p>
+<ul>
+<li>Activo.</li>
+<li>Inactivo.</li>
+</ul>
+<p>Los bolsillos inactivos se identifican visualmente.</p>
+<p>Los formularios de movimientos y transferencias trabajan con los bolsillos activos.</p>
+<hr>
+<h2>8.7. Eliminar bolsillo</h2>
+<p>Un bolsillo puede eliminarse desde su tarjeta.</p>
+<p>La aplicación solicita confirmación antes de realizar la eliminación.</p>
+<p>&gt; Recomendación funcional: antes de eliminar un bolsillo con saldo o movimientos, verificar las reglas de negocio del backend y decidir si debe permitirse, bloquearse o requerir primero mover el saldo.</p>
+<hr>
+<h1>9. Transferencias</h1>
+<h2>8.1. ¿Qué es una transferencia?</h2>
+<p>Una transferencia mueve dinero de un origen a un destino.</p>
+<p>Los posibles espacios son:</p>
+<ul>
+<li>Cuenta principal.</li>
+<li>Bolsillo activo.</li>
+</ul>
+<p>Por tanto existen tres escenarios:</p>
+<pre><code>Cuenta principal → Bolsillo
+Bolsillo → Cuenta principal
+Bolsillo → Bolsillo</code></pre>
+<hr>
+<h2>8.2. Transferir dinero a un bolsillo</h2>
+<p>Desde:</p>
+<p><strong>Bolsillos → Transferir</strong></p>
+<p>o mediante:</p>
+<p><strong>Cargar bolsillo</strong></p>
+<p>El botón <strong>Cargar bolsillo</strong> abre el formulario con el bolsillo seleccionado como destino.</p>
+<p>Ejemplo:</p>
+<pre><code>Origen:     Cuenta principal
+Destino:    Ahorros
+Monto:      $500.000</code></pre>
+<p>Resultado conceptual:</p>
+<pre><code>Cuenta principal:  -$500.000
+Ahorros:           +$500.000</code></pre>
+<p>El dinero total no cambia.</p>
+<hr>
+<h2>8.3. Retirar dinero de un bolsillo</h2>
+<p>Ejemplo:</p>
+<pre><code>Origen:     Ahorros
+Destino:    Cuenta principal
+Monto:      $200.000</code></pre>
+<p>Resultado:</p>
+<pre><code>Ahorros:           -$200.000
+Cuenta principal:  +$200.000</code></pre>
+<hr>
+<h2>8.4. Transferir entre bolsillos</h2>
+<p>Ejemplo:</p>
+<pre><code>Origen:     Ahorros
+Destino:    Viaje
+Monto:      $300.000</code></pre>
+<p>Resultado:</p>
+<pre><code>Ahorros:  -$300.000
+Viaje:    +$300.000</code></pre>
+<hr>
+<h2>8.5. Validaciones de transferencias</h2>
+<p>El formulario valida:</p>
+<ul>
+<li>Debe existir un origen.</li>
+<li>Debe existir un destino.</li>
+<li>Origen y destino no pueden ser iguales.</li>
+<li>El monto debe ser mayor que cero.</li>
+<li>La fecha es obligatoria.</li>
+<li>El origen debe tener saldo suficiente.</li>
+</ul>
+<p>También muestra el saldo disponible del origen.</p>
+<p>Si se intenta transferir más dinero del disponible, se muestra un error de saldo insuficiente.</p>
+<hr>
+<h2>8.6. Fecha y nota</h2>
+<p>Una transferencia tiene:</p>
+<ul>
+<li>Monto.</li>
+<li>Fecha.</li>
+<li>Nota opcional.</li>
+</ul>
+<p>Ejemplo:</p>
+<pre><code>Monto:  $500.000
+Fecha:  2026-08-27
+Nota:   Ahorro mensual</code></pre>
+<hr>
+<h2>8.7. Historial de transferencias</h2>
+<p>La sección de bolsillos mantiene un historial específico de transferencias.</p>
+<p>Muestra:</p>
+<ul>
+<li>Origen.</li>
+<li>Destino.</li>
+<li>Monto.</li>
+<li>Fecha.</li>
+</ul>
+<p>Ejemplo:</p>
+<pre><code>Cuenta principal → Ahorros     $500.000
+Ahorros → Viaje                $200.000
+Viaje → Cuenta principal       $50.000</code></pre>
+<p>Este historial debe interpretarse separado del historial de gastos e ingresos.</p>
+<hr>
+<h1>10. Regla crítica: transferencia ≠ gasto</h1>
+<p>Esta es la regla más importante para utilizar correctamente la aplicación.</p>
+<h3>Transferencia</h3>
+<pre><code>Cuenta principal → Ahorros
+$1.000.000</code></pre>
+<p>Significa:</p>
+<p>&gt; &quot;Estoy moviendo dinero mío.&quot;</p>
+<p>No es un gasto.</p>
+<h3>Gasto</h3>
+<pre><code>Ahorros → Supermercado
+$200.000</code></pre>
+<p>Significa:</p>
+<p>&gt; &quot;Estoy consumiendo dinero.&quot;</p>
+<p>Sí es un gasto.</p>
+<p>Por tanto:</p>
+<p>&gt; <strong>Nunca registrar una transferencia interna como un gasto.</strong></p>
+<hr>
+<h1>11. Presupuestos</h1>
+<p>La aplicación dispone de una sección:</p>
+<p><strong>Presupuestos</strong></p>
+<p>El objetivo es controlar límites de gasto.</p>
+<p>Los presupuestos se relacionan con el comportamiento de los movimientos y con la configuración <code>affectsBudget</code> de los bolsillos.</p>
+<p>Un bolsillo configurado para afectar presupuesto hace que sus movimientos participen en el control presupuestario.</p>
+<p>Un bolsillo configurado como:</p>
+<p>&gt; No afecta presupuesto</p>
+<p>queda fuera de esos topes para sus gastos.</p>
+<h2>11.1. Presupuesto mensual de ingresos</h2>
+<p>El módulo de presupuestos también puede manejar el tipo <strong>Ingreso</strong>, además del tipo <strong>Gasto</strong>.</p>
+<p>Ejemplo:</p>
+<pre><code>Ingresos presupuestados   $4.800.000
+Ingresos reales           $4.500.000
+Faltante                    $300.000</code></pre>
+<p>El presupuesto de ingresos permite comparar las metas mensuales con los ingresos reales. Las transferencias entre espacios propios y los movimientos de inversión no deben tratarse como ingresos por el solo hecho de mover dinero.</p>
+<hr>
+<h1>12. Deudas</h1>
+<p>La aplicación incluye una sección:</p>
+<p><strong>Deudas</strong></p>
+<p>Permite gestionar información relacionada con obligaciones financieras.</p>
+<p>La estructura del módulo incluye:</p>
+<ul>
+<li>Listado de deudas.</li>
+<li>Formulario de deuda.</li>
+<li>Tarjetas/resúmenes individuales.</li>
+<li>Hook de gestión.</li>
+<li>Servicio de persistencia.</li>
+</ul>
+<p>La finalidad es mantener las obligaciones separadas de los movimientos normales y facilitar su seguimiento.</p>
+<hr>
+<h1>13. Tarjetas de crédito</h1>
+<p>La aplicación incluye:</p>
+<p><strong>Tarjetas de crédito</strong></p>
+<p>El módulo contempla:</p>
+<ul>
+<li>Crear tarjetas.</li>
+<li>Gestionar tarjetas.</li>
+<li>Mostrar tarjetas individualmente.</li>
+<li>Registrar pagos.</li>
+<li>Consultar pagos.</li>
+<li>Abrir el historial/modal de pagos.</li>
+<li>Asociar gastos a tarjetas activas.</li>
+</ul>
+<hr>
+<h2>12.1. Registrar un gasto con tarjeta</h2>
+<p>En un gasto se puede seleccionar:</p>
+<p>&gt; Pagado con tarjeta de crédito</p>
+<p>Después se selecciona una tarjeta activa.</p>
+<p>Esto vincula el movimiento con la tarjeta.</p>
+<hr>
+<h2>12.2. Pagos de tarjeta</h2>
+<p>Los pagos de tarjeta tienen su propio flujo y formulario.</p>
+<p>Esto permite diferenciar:</p>
+<p>&gt; <strong>Compra realizada con tarjeta</strong></p>
+<p>de:</p>
+<p>&gt; <strong>Pago realizado a la tarjeta</strong></p>
+<p>Esta separación es importante para evitar contabilizar dos veces el mismo gasto.</p>
+<hr>
+<h1>14. Resumen</h1>
+<p>La sección:</p>
+<p><strong>Resumen</strong></p>
+<p>está orientada al análisis financiero.</p>
+<p>Incluye:</p>
+<h3>Resumen diario</h3>
+<p>Permite revisar el comportamiento diario.</p>
+<h3>Resumen mensual</h3>
+<p>Incluye métricas como:</p>
+<ul>
+<li>Promedio de gasto diario.</li>
+<li>Día de mayor gasto.</li>
+<li>Totales del período.</li>
+</ul>
+<h3>Flujo financiero</h3>
+<p>Incluye una gráfica para visualizar:</p>
+<ul>
+<li>Ingresos.</li>
+<li>Gastos.</li>
+<li>Balance acumulado.</li>
+</ul>
+<hr>
+<h1>15. Importación y exportación</h1>
+<p>La aplicación permite respaldar y restaurar movimientos mediante <strong>JSON o CSV</strong>.</p>
+<h2>Exportar</h2>
+<p>Existe un único botón <strong>Exportar</strong>. Al abrirlo, el usuario decide el formato:</p>
+<ul>
+<li><strong>JSON</strong> → <code>finanzas-backup.json</code></li>
+<li><strong>CSV</strong> → <code>finanzas-backup.csv</code></li>
+</ul>
+<h2>Importar</h2>
+<p>El usuario puede seleccionar un archivo JSON o CSV. El formato se identifica a partir del archivo y se procesa utilizando la misma lógica de importación.</p>
+<p>El CSV admite campos con comas, comillas, saltos de línea y caracteres UTF-8.</p>
+<p>Los movimientos importados conservan información relevante como valor, tipo, descripción, fecha, categoría, tarjeta, bolsillo y fecha de creación cuando está disponible.</p>
+<p>La importación conserva información relevante del movimiento, incluyendo:</p>
+<ul>
+<li>Valor.</li>
+<li>Tipo.</li>
+<li>Descripción.</li>
+<li>Fecha.</li>
+<li>Categoría.</li>
+<li>Tarjeta.</li>
+<li>Bolsillo.</li>
+<li>Fecha de creación.</li>
+</ul>
+<p>&gt; Recomendación: utilizar los respaldos como mecanismo de recuperación/migración y conservar una copia antes de hacer importaciones grandes.</p>
+<hr>
+<h1>16. Diseño responsive y móvil</h1>
+<p>La aplicación está preparada para:</p>
+<ul>
+<li>Escritorio.</li>
+<li>Tablet.</li>
+<li>Teléfono.</li>
+</ul>
+<p>En móvil existe un acceso flotante para:</p>
+<p>&gt; <strong>Agregar nuevo movimiento</strong></p>
+<p>Esto permite registrar un movimiento aunque el menú o las acciones principales no estén visibles por el reducido tamaño de pantalla.</p>
+<p>El botón abre directamente:</p>
+<p><strong>Nuevo movimiento</strong></p>
+<hr>
+<h1>17. Flujo recomendado para el usuario</h1>
+<p>Una rutina sencilla sería:</p>
+<h3>Al recibir dinero</h3>
+<p>1. Registrar el ingreso.</p>
+<p>2. Dejarlo en cuenta principal o asignarlo al bolsillo correspondiente.</p>
+<h3>Al separar dinero</h3>
+<p>1. Ir a Bolsillos.</p>
+<p>2. Elegir el bolsillo.</p>
+<p>3. Usar <strong>Cargar bolsillo</strong>.</p>
+<p>4. Transferir el dinero.</p>
+<h3>Al gastar</h3>
+<p>1. Crear un movimiento.</p>
+<p>2. Seleccionar <strong>Gasto</strong>.</p>
+<p>3. Seleccionar categoría.</p>
+<p>4. Seleccionar bolsillo si corresponde.</p>
+<p>5. Seleccionar tarjeta si fue una compra con crédito.</p>
+<p>6. Guardar.</p>
+<h3>Al devolver dinero de un bolsillo</h3>
+<p>Utilizar:</p>
+<p><strong>Transferencia</strong></p>
+<p>y no un ingreso.</p>
+<h3>Al mover dinero entre bolsillos</h3>
+<p>Utilizar:</p>
+<p><strong>Transferencia</strong></p>
+<p>y no un gasto ni un ingreso.</p>
+<hr>
+<h1>18. Ejemplo de un mes completo</h1>
+<p>Supongamos que recibes:</p>
+<pre><code>Salario = $5.000.000</code></pre>
+<p>Registras:</p>
+<pre><code>Ingreso
+$5.000.000
+Cuenta principal</code></pre>
+<p>Después decides separar:</p>
+<pre><code>Ahorros  = $1.000.000
+Mercado  = $800.000
+Viaje    = $500.000</code></pre>
+<p>Realizas tres transferencias:</p>
+<pre><code>Cuenta principal → Ahorros   $1.000.000
+Cuenta principal → Mercado     $800.000
+Cuenta principal → Viaje       $500.000</code></pre>
+<p>La distribución queda:</p>
+<pre><code>Cuenta principal   $2.700.000
+Ahorros            $1.000.000
+Mercado              $800.000
+Viaje                 $500.000
+--------------------------------
+Total               $5.000.000</code></pre>
+<p>Después compras mercado:</p>
+<pre><code>Gasto
+$250.000
+Bolsillo: Mercado</code></pre>
+<p>Ahora:</p>
+<pre><code>Cuenta principal   $2.700.000
+Ahorros            $1.000.000
+Mercado              $550.000
+Viaje                 $500.000
+--------------------------------
+Total               $4.750.000</code></pre>
+<p>La diferencia de $250.000 sí representa consumo real.</p>
+<hr>
+<h1>19. Errores que se deben evitar</h1>
+<h3>❌ Registrar una transferencia como gasto</h3>
+<p>Incorrecto:</p>
+<pre><code>Gasto → Ahorros → $500.000</code></pre>
+<p>Correcto:</p>
+<pre><code>Transferencia
+Cuenta principal → Ahorros
+$500.000</code></pre>
+<hr>
+<h3>❌ Registrar el retiro de un bolsillo como ingreso</h3>
+<p>Incorrecto:</p>
+<pre><code>Ingreso → Cuenta principal → $300.000</code></pre>
+<p>Correcto:</p>
+<pre><code>Transferencia
+Ahorros → Cuenta principal
+$300.000</code></pre>
+<hr>
+<h3>❌ Registrar el pago de una tarjeta como si fuera otra compra</h3>
+<p>La compra con tarjeta y el pago de la tarjeta son eventos diferentes.</p>
+<p>Debe evitarse duplicar el gasto.</p>
+<hr>
+<h3>❌ Crear bolsillos para representar bancos diferentes sin una regla clara</h3>
+<p>Un bolsillo es una separación lógica dentro de la aplicación.</p>
+<p>Si se quiere representar cuentas bancarias reales, conviene definir primero una regla de producto clara para no mezclar:</p>
+<ul>
+<li>cuentas bancarias,</li>
+<li>bolsillos,</li>
+<li>tarjetas,</li>
+<li>efectivo.</li>
+</ul>
+<hr>
+<h1>20. Resumen de cuándo utilizar cada funcionalidad</h1>
+<p>| Necesidad | Funcionalidad |</p>
+<p>|---|---|</p>
+<p>| Recibí dinero | <strong>Ingreso</strong> |</p>
+<p>| Gasté dinero | <strong>Gasto</strong> |</p>
+<p>| Quiero separar dinero | <strong>Transferencia</strong> |</p>
+<p>| Quiero ahorrar | <strong>Bolsillo + Transferencia</strong> |</p>
+<p>| Quiero devolver dinero del bolsillo | <strong>Transferencia</strong> |</p>
+<p>| Quiero mover dinero entre bolsillos | <strong>Transferencia</strong> |</p>
+<p>| Quiero clasificar una operación | <strong>Categoría</strong> |</p>
+<p>| Quiero controlar un límite | <strong>Presupuesto</strong> |</p>
+<p>| Quiero planificar ingresos mensuales | <strong>Presupuesto → Ingreso</strong> |</p>
+<p>| Quiero gestionar una inversión | <strong>Configuración → Inversiones</strong> |</p>
+<p>| Quiero registrar una operación de inversión | <strong>Inversiones → Operaciones</strong> |</p>
+<p>| Quiero consultar rentabilidad | <strong>Inversiones → Rentabilidad</strong> |</p>
+<p>| Tengo una obligación | <strong>Deuda</strong> |</p>
+<p>| Compré con crédito | <strong>Movimiento + Tarjeta</strong> |</p>
+<p>| Pagué la tarjeta | <strong>Pago de tarjeta</strong> |</p>
+<p>| Quiero analizar mis finanzas | <strong>Resumen</strong> |</p>
+<p>| Quiero revisar rápidamente mi situación | <strong>Dashboard</strong> |</p>
+<p>| Necesito buscar una operación | <strong>Movimientos + filtros</strong> |</p>
+<p>| Necesito recuperar/migrar movimientos | <strong>Importar/Exportar</strong> |</p>
+<hr>
+<h1>21. Modelo mental de toda la aplicación</h1>
+<p>La forma más sencilla de entender el producto es:</p>
+<pre><code>                         MIS FINANZAS
+                              │
+             ┌────────────────┼────────────────┐
+             │                │                │
+        MOVIMIENTOS       BOLSILLOS        TARJETAS
+             │                │                │
+        ┌────┴────┐       Transferencias     Pagos
+        │         │
+     INGRESOS   GASTOS
+        │         │
+        └────┬────┘
+             │
+        CATEGORÍAS
+             │
+        PRESUPUESTOS
+             │
+          RESUMEN
+             │
+         DASHBOARD</code></pre>
+<p>Y la regla contable central es:</p>
+<pre><code>INGRESO       = entra dinero
+GASTO         = sale dinero
+TRANSFERENCIA = cambia de ubicación</code></pre>
+<hr>
+<h1>22. Referencia técnica de alto nivel</h1>
+<p>El frontend está construido con:</p>
+<ul>
+<li>React 18.</li>
+<li>TypeScript.</li>
+<li>Vite.</li>
+<li>Tailwind CSS.</li>
+<li>Recharts.</li>
+<li>lucide-react.</li>
+<li>Componentes reutilizables.</li>
+<li><code>master-crud</code> para maestros configurables, incluido el maestro de inversiones.</li>
+</ul>
+<p>La aplicación está organizada por módulos:</p>
+<pre><code>src/modules/
+├── auth/
+├── dashboard/
+├── transactions/
+├── summary/
+├── categories/
+├── debts/
+├── credit-cards/
+├── budgets/
+├── investments/
+└── pockets/</code></pre>
+<p>El módulo de movimientos centraliza las operaciones CRUD mediante <code>TransactionManager</code>, evitando que los componentes visuales accedan directamente al servicio de persistencia.</p>
+<p>Los módulos de bolsillos y transferencias cuentan con sus propios:</p>
+<ul>
+<li>tipos,</li>
+<li>servicios,</li>
+<li>hooks,</li>
+<li>formularios,</li>
+<li>componentes visuales.</li>
+</ul>
+<p>La comunicación con el backend se realiza mediante una capa <code>apiFetch</code>.</p>
+<hr>
+<h1>23. Referencia rápida para soporte</h1>
+<p>Cuando un usuario pregunte:</p>
+<p><strong>&quot;¿Dónde pongo que recibí dinero?&quot;</strong></p>
+<p>→ Movimiento → Ingreso.</p>
+<p><strong>&quot;¿Dónde pongo que gasté?&quot;</strong></p>
+<p>→ Movimiento → Gasto.</p>
+<p><strong>&quot;Quiero separar $500.000 para ahorrar.&quot;</strong></p>
+<p>→ Bolsillo Ahorros → Cargar bolsillo → Transferencia.</p>
+<p><strong>&quot;Quiero sacar $200.000 de ahorros.&quot;</strong></p>
+<p>→ Transferencia Ahorros → Cuenta principal.</p>
+<p><strong>&quot;Quiero pasar $100.000 de Ahorros a Viaje.&quot;</strong></p>
+<p>→ Transferencia Ahorros → Viaje.</p>
+<p><strong>&quot;Quiero que mis gastos de ahorro no afecten mi presupuesto.&quot;</strong></p>
+<p>→ Editar bolsillo → desactivar <strong>Afecta presupuesto</strong>.</p>
+<p><strong>&quot;Quiero ver en qué gasté.&quot;</strong></p>
+<p>→ Movimientos / Resumen.</p>
+<p><strong>&quot;Quiero saber cuánto dinero tengo.&quot;</strong></p>
+<p>→ Dashboard / Cuenta principal / Bolsillos.</p>
+<p><strong>&quot;Quiero crear o modificar una inversión.&quot;</strong></p>
+<p>→ Configuración → Inversiones.</p>
+<p><strong>&quot;Quiero registrar una compra, venta o rendimiento de una inversión.&quot;</strong></p>
+<p>→ Inversiones → Operaciones.</p>
+<p><strong>&quot;Quiero saber cuánto he ganado con mis inversiones.&quot;</strong></p>
+<p>→ Inversiones → Rentabilidad.</p>
+<p><strong>&quot;Quiero definir una meta de ingresos mensual.&quot;</strong></p>
+<p>→ Presupuestos → tipo Ingreso.</p>
+<hr>
+<h2>Nota final</h2>
+<p>Este documento describe el funcionamiento funcional observado en los proyectos entregados. Para decisiones contables más estrictas —por ejemplo, cómo debe afectar una compra con tarjeta al saldo disponible, cómo contabilizar pagos de tarjeta, o qué debe ocurrir al eliminar un bolsillo con saldo— conviene definir explícitamente las reglas de negocio del backend antes de considerar esas decisiones como reglas contables definitivas.</p></article></main>
+<footer>Finanzas Personales · Documentación</footer></body></html>
