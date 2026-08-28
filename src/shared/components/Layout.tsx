@@ -10,13 +10,14 @@ import {
   Landmark,
   CreditCard as CreditCardIcon,
   Target,
+  TrendingUp,
 } from "lucide-react";
 import { Modal } from "./Modal";
 import { TransactionForm } from "../../modules/transactions/components/TransactionForm";
 import { useTransactionManager } from "../../modules/transactions/components/TransactionManager";
 import type { AuthUser } from "../../modules/auth/services/auth";
 
-export type Page = "dashboard" | "transactions" | "summary" | "categories" | "debts" | "credit-cards" | "budgets" | "pockets";
+export type Page = "dashboard" | "transactions" | "summary" | "categories" | "debts" | "credit-cards" | "budgets" | "pockets" | "investments";
 
 interface LayoutProps {
   page: Page;
@@ -31,6 +32,7 @@ const NAV_ITEMS: { id: Page; label: string; icon: typeof LayoutDashboard }[] = [
   { id: "transactions", label: "Movimientos", icon: ArrowLeftRight },
   { id: "budgets", label: "Presupuesto", icon: Target },
   { id: "pockets", label: "Bolsillos", icon: Wallet },
+  { id: "investments", label: "Inversiones", icon: TrendingUp },
   { id: "debts", label: "Deudas", icon: Landmark },
   { id: "credit-cards", label: "Tarjetas", icon: CreditCardIcon },
   { id: "summary", label: "Resumen", icon: PieChart },
