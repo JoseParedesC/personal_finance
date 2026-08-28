@@ -16,7 +16,8 @@ Permite:
 - Asociar movimientos a categorías.
 - Separar dinero mediante bolsillos.
 - Transferir dinero entre la cuenta principal y bolsillos.
-- Controlar presupuestos.
+- Controlar presupuestos de gastos e ingresos.
+- Gestionar inversiones y consultar su rentabilidad.
 - Registrar deudas.
 - Gestionar tarjetas de crédito y sus pagos.
 - Consultar saldos y resúmenes.
@@ -294,9 +295,93 @@ Las categorías se utilizan posteriormente al registrar movimientos.
 
 ---
 
-# 7. Bolsillos
+# 7. Inversiones
 
-## 7.1. Objetivo
+La aplicación separa el **maestro de inversiones** de las operaciones financieras.
+
+## 7.1. Maestro de inversiones
+
+Se administra desde:
+
+**Configuración → Inversiones**
+
+El maestro utiliza `master-crud` y permite gestionar datos como:
+
+- Código.
+- Nombre.
+- Tipo de inversión.
+- Institución.
+- Moneda.
+- Descripción.
+- Estado activo/inactivo.
+
+Tipos contemplados inicialmente:
+
+```text
+CDT
+Fondo de inversión
+Acción
+ETF
+Criptomoneda
+Bonos
+Cuenta remunerada
+Otro
+```
+
+## 7.2. Operaciones de inversión
+
+La funcionalidad de proceso se encuentra en:
+
+**Inversiones**
+
+Las operaciones se registran separadas del maestro. Se contemplan:
+
+- Aporte.
+- Retiro.
+- Compra.
+- Venta.
+- Intereses.
+- Dividendos.
+- Comisión.
+- Ajuste.
+
+Una operación puede manejar cantidad, precio unitario, valor, comisión, fecha y descripción según corresponda.
+
+## 7.3. Valoraciones
+
+Las inversiones que necesitan valoración pueden registrar un valor/precio en una fecha determinada. Esto permite conservar un historial y calcular el valor actual sin modificar las operaciones originales.
+
+## 7.4. Rentabilidad
+
+La rentabilidad se calcula a partir de las operaciones y valoraciones. El resumen puede incluir:
+
+- Capital neto invertido.
+- Valor actual.
+- Ganancia realizada.
+- Ganancia no realizada.
+- Intereses y dividendos.
+- Comisiones.
+- Rentabilidad porcentual.
+
+Para ventas parciales se utiliza el criterio FIFO para determinar el costo de las unidades vendidas.
+
+## 7.5. Inversiones y movimientos
+
+Una inversión no debe registrarse como un gasto solamente porque se destinó dinero a ella. El traslado de dinero entre un bolsillo/cuenta y una inversión es una **transferencia**, no un consumo.
+
+Por ejemplo:
+
+```text
+Ahorros → Inversión     $1.000.000
+```
+
+No debe aumentar el total de gastos. Los intereses y dividendos sí pueden representar rendimientos/ingresos según la regla de negocio definida para el producto.
+
+---
+
+# 8. Bolsillos
+
+## 8.1. Objetivo
 
 Los bolsillos sirven para separar dinero y controlar diferentes objetivos o áreas financieras.
 
@@ -312,7 +397,7 @@ Cuenta principal
 
 ---
 
-## 7.2. Crear un bolsillo
+## 8.2. Crear un bolsillo
 
 Ir a:
 
@@ -334,7 +419,7 @@ Afecta presupuesto: Sí
 
 ---
 
-## 7.3. Afecta presupuesto
+## 8.3. Afecta presupuesto
 
 Cada bolsillo tiene una configuración:
 
@@ -360,7 +445,7 @@ Afecta presupuesto: No
 
 ---
 
-## 7.4. Saldo del bolsillo
+## 8.4. Saldo del bolsillo
 
 Cada bolsillo muestra:
 
@@ -378,7 +463,7 @@ También se calculan:
 
 ---
 
-## 7.5. Editar bolsillo
+## 8.5. Editar bolsillo
 
 Se puede modificar:
 
@@ -388,7 +473,7 @@ Se puede modificar:
 
 ---
 
-## 7.6. Activar/desactivar bolsillo
+## 8.6. Activar/desactivar bolsillo
 
 Un bolsillo puede marcarse como:
 
@@ -401,7 +486,7 @@ Los formularios de movimientos y transferencias trabajan con los bolsillos activ
 
 ---
 
-## 7.7. Eliminar bolsillo
+## 8.7. Eliminar bolsillo
 
 Un bolsillo puede eliminarse desde su tarjeta.
 
@@ -411,7 +496,7 @@ La aplicación solicita confirmación antes de realizar la eliminación.
 
 ---
 
-# 8. Transferencias
+# 9. Transferencias
 
 ## 8.1. ¿Qué es una transferencia?
 
@@ -559,7 +644,7 @@ Este historial debe interpretarse separado del historial de gastos e ingresos.
 
 ---
 
-# 9. Regla crítica: transferencia ≠ gasto
+# 10. Regla crítica: transferencia ≠ gasto
 
 Esta es la regla más importante para utilizar correctamente la aplicación.
 
@@ -595,7 +680,7 @@ Por tanto:
 
 ---
 
-# 10. Presupuestos
+# 11. Presupuestos
 
 La aplicación dispone de una sección:
 
@@ -613,9 +698,23 @@ Un bolsillo configurado como:
 
 queda fuera de esos topes para sus gastos.
 
+## 11.1. Presupuesto mensual de ingresos
+
+El módulo de presupuestos también puede manejar el tipo **Ingreso**, además del tipo **Gasto**.
+
+Ejemplo:
+
+```text
+Ingresos presupuestados   $4.800.000
+Ingresos reales           $4.500.000
+Faltante                    $300.000
+```
+
+El presupuesto de ingresos permite comparar las metas mensuales con los ingresos reales. Las transferencias entre espacios propios y los movimientos de inversión no deben tratarse como ingresos por el solo hecho de mover dinero.
+
 ---
 
-# 11. Deudas
+# 12. Deudas
 
 La aplicación incluye una sección:
 
@@ -635,7 +734,7 @@ La finalidad es mantener las obligaciones separadas de los movimientos normales 
 
 ---
 
-# 12. Tarjetas de crédito
+# 13. Tarjetas de crédito
 
 La aplicación incluye:
 
@@ -681,7 +780,7 @@ Esta separación es importante para evitar contabilizar dos veces el mismo gasto
 
 ---
 
-# 13. Resumen
+# 14. Resumen
 
 La sección:
 
@@ -713,23 +812,24 @@ Incluye una gráfica para visualizar:
 
 ---
 
-# 14. Importación y exportación
+# 15. Importación y exportación
 
-La aplicación contempla respaldo de movimientos mediante JSON.
-
-El archivo de respaldo se maneja como:
-
-```text
-finanzas-backup.json
-```
+La aplicación permite respaldar y restaurar movimientos mediante **JSON o CSV**.
 
 ## Exportar
 
-Se genera un respaldo de los movimientos.
+Existe un único botón **Exportar**. Al abrirlo, el usuario decide el formato:
+
+- **JSON** → `finanzas-backup.json`
+- **CSV** → `finanzas-backup.csv`
 
 ## Importar
 
-Los movimientos de un respaldo pueden enviarse nuevamente a la aplicación.
+El usuario puede seleccionar un archivo JSON o CSV. El formato se identifica a partir del archivo y se procesa utilizando la misma lógica de importación.
+
+El CSV admite campos con comas, comillas, saltos de línea y caracteres UTF-8.
+
+Los movimientos importados conservan información relevante como valor, tipo, descripción, fecha, categoría, tarjeta, bolsillo y fecha de creación cuando está disponible.
 
 La importación conserva información relevante del movimiento, incluyendo:
 
@@ -746,7 +846,7 @@ La importación conserva información relevante del movimiento, incluyendo:
 
 ---
 
-# 15. Diseño responsive y móvil
+# 16. Diseño responsive y móvil
 
 La aplicación está preparada para:
 
@@ -766,7 +866,7 @@ El botón abre directamente:
 
 ---
 
-# 16. Flujo recomendado para el usuario
+# 17. Flujo recomendado para el usuario
 
 Una rutina sencilla sería:
 
@@ -809,7 +909,7 @@ y no un gasto ni un ingreso.
 
 ---
 
-# 17. Ejemplo de un mes completo
+# 18. Ejemplo de un mes completo
 
 Supongamos que recibes:
 
@@ -875,7 +975,7 @@ La diferencia de $250.000 sí representa consumo real.
 
 ---
 
-# 18. Errores que se deben evitar
+# 19. Errores que se deben evitar
 
 ### ❌ Registrar una transferencia como gasto
 
@@ -934,7 +1034,7 @@ Si se quiere representar cuentas bancarias reales, conviene definir primero una 
 
 ---
 
-# 19. Resumen de cuándo utilizar cada funcionalidad
+# 20. Resumen de cuándo utilizar cada funcionalidad
 
 | Necesidad | Funcionalidad |
 |---|---|
@@ -946,6 +1046,10 @@ Si se quiere representar cuentas bancarias reales, conviene definir primero una 
 | Quiero mover dinero entre bolsillos | **Transferencia** |
 | Quiero clasificar una operación | **Categoría** |
 | Quiero controlar un límite | **Presupuesto** |
+| Quiero planificar ingresos mensuales | **Presupuesto → Ingreso** |
+| Quiero gestionar una inversión | **Configuración → Inversiones** |
+| Quiero registrar una operación de inversión | **Inversiones → Operaciones** |
+| Quiero consultar rentabilidad | **Inversiones → Rentabilidad** |
 | Tengo una obligación | **Deuda** |
 | Compré con crédito | **Movimiento + Tarjeta** |
 | Pagué la tarjeta | **Pago de tarjeta** |
@@ -956,7 +1060,7 @@ Si se quiere representar cuentas bancarias reales, conviene definir primero una 
 
 ---
 
-# 20. Modelo mental de toda la aplicación
+# 21. Modelo mental de toda la aplicación
 
 La forma más sencilla de entender el producto es:
 
@@ -992,7 +1096,7 @@ TRANSFERENCIA = cambia de ubicación
 
 ---
 
-# 21. Referencia técnica de alto nivel
+# 22. Referencia técnica de alto nivel
 
 El frontend está construido con:
 
@@ -1003,6 +1107,7 @@ El frontend está construido con:
 - Recharts.
 - lucide-react.
 - Componentes reutilizables.
+- `master-crud` para maestros configurables, incluido el maestro de inversiones.
 
 La aplicación está organizada por módulos:
 
@@ -1016,6 +1121,7 @@ src/modules/
 ├── debts/
 ├── credit-cards/
 ├── budgets/
+├── investments/
 └── pockets/
 ```
 
@@ -1032,6 +1138,66 @@ Los módulos de bolsillos y transferencias cuentan con sus propios:
 La comunicación con el backend se realiza mediante una capa `apiFetch`.
 
 ---
+
+# 23. Referencia rápida para soporte
+
+Cuando un usuario pregunte:
+
+**"¿Dónde pongo que recibí dinero?"**
+
+→ Movimiento → Ingreso.
+
+**"¿Dónde pongo que gasté?"**
+
+→ Movimiento → Gasto.
+
+**"Quiero separar $500.000 para ahorrar."**
+
+→ Bolsillo Ahorros → Cargar bolsillo → Transferencia.
+
+**"Quiero sacar $200.000 de ahorros."**
+
+→ Transferencia Ahorros → Cuenta principal.
+
+**"Quiero pasar $100.000 de Ahorros a Viaje."**
+
+→ Transferencia Ahorros → Viaje.
+
+**"Quiero que mis gastos de ahorro no afecten mi presupuesto."**
+
+→ Editar bolsillo → desactivar **Afecta presupuesto**.
+
+**"Quiero ver en qué gasté."**
+
+→ Movimientos / Resumen.
+
+**"Quiero saber cuánto dinero tengo."**
+
+→ Dashboard / Cuenta principal / Bolsillos.
+
+**"Quiero crear o modificar una inversión."**
+
+→ Configuración → Inversiones.
+
+**"Quiero registrar una compra, venta o rendimiento de una inversión."**
+
+→ Inversiones → Operaciones.
+
+**"Quiero saber cuánto he ganado con mis inversiones."**
+
+→ Inversiones → Rentabilidad.
+
+**"Quiero definir una meta de ingresos mensual."**
+
+→ Presupuestos → tipo Ingreso.
+
+---
+
+## Nota final
+
+Este documento describe el funcionamiento funcional observado en los proyectos entregados. Para decisiones contables más estrictas —por ejemplo, cómo debe afectar una compra con tarjeta al saldo disponible, cómo contabilizar pagos de tarjeta, o qué debe ocurrir al eliminar un bolsillo con saldo— conviene definir explícitamente las reglas de negocio del backend antes de considerar esas decisiones como reglas contables definitivas.
+
+
 
 # 22. Referencia rápida para soporte
 
@@ -1069,9 +1235,176 @@ Cuando un usuario pregunte:
 
 → Dashboard / Cuenta principal / Bolsillos.
 
+**"Quiero registrar una inversión."**
+
+→ Configuración → Inversiones → crear/editar el maestro de inversión.
+
+**"Quiero registrar una compra, aporte o venta de una inversión."**
+
+→ Inversiones → Operaciones.
+
+**"Quiero actualizar el valor de una inversión."**
+
+→ Inversiones → Valoraciones.
+
+**"Quiero saber cuánto estoy ganando con mis inversiones."**
+
+→ Inversiones → Rentabilidad.
+
+Las inversiones son activos y no deben registrarse como gastos. Los movimientos de dinero entre un bolsillo y una inversión se manejan como transferencias y no deben afectar por sí mismos el presupuesto de gastos.
+
+**"Quiero presupuestar mis ingresos."**
+
+→ Presupuesto mensual → seleccionar tipo **Ingreso**.
+
+Los presupuestos mantienen los tipos **Ingreso** y **Gasto**. Los aportes a inversiones no deben tratarse como gastos y los retiros de capital de una inversión no deben tratarse como ingresos; los intereses y dividendos sí pueden representar ingresos.
+
+**"Quiero exportar mis datos."**
+
+→ Exportar → elegir **JSON** o **CSV**.
+
+**"Quiero importar mis datos."**
+
+→ Importar → seleccionar el archivo **JSON** o **CSV**.
+
+La exportación CSV está preparada para trabajar con valores que contengan comas, comillas, saltos de línea y caracteres UTF-8. La importación detecta el formato por la extensión y valida la estructura antes de enviar los movimientos al backend.
+
 ---
 
-## Nota final
+## 23. Inversiones
 
-Este documento describe el funcionamiento funcional observado en los proyectos entregados. Para decisiones contables más estrictas —por ejemplo, cómo debe afectar una compra con tarjeta al saldo disponible, cómo contabilizar pagos de tarjeta, o qué debe ocurrir al eliminar un bolsillo con saldo— conviene definir explícitamente las reglas de negocio del backend antes de considerar esas decisiones como reglas contables definitivas.
+La funcionalidad de inversiones está separada en dos áreas:
+
+### Maestro de inversiones
+
+Ubicación:
+
+```text
+Configuración
+├── Categorías
+└── Inversiones
+```
+
+El maestro utiliza `@joseparedesc/master-crud` y administra los datos relativamente estables de cada inversión:
+
+- código
+- nombre
+- tipo
+- institución
+- moneda
+- descripción
+- estado activo/inactivo
+
+El maestro no debe almacenar directamente valores calculados como saldo, rentabilidad o ganancia. Estos se obtienen a partir de las operaciones y valoraciones.
+
+### Operaciones y rentabilidad
+
+Ubicación:
+
+```text
+Inversiones
+├── Operaciones
+├── Valoraciones
+└── Rentabilidad
+```
+
+Las operaciones soportadas son:
+
+- aporte
+- retiro
+- compra
+- venta
+- interés
+- dividendo
+- comisión
+- ajuste
+
+Las inversiones pueden manejar cantidades y precios unitarios cuando corresponda. Las ventas parciales utilizan FIFO para determinar el costo de las unidades vendidas.
+
+La rentabilidad se calcula considerando:
+
+- capital invertido
+- capital retirado
+- valor actual
+- ganancias realizadas
+- ganancias no realizadas
+- intereses y dividendos
+- comisiones
+
+Las valoraciones permiten registrar el valor/precio de una inversión en una fecha determinada sin obligar inicialmente a utilizar una API externa de mercado.
+
+### Transferencias de inversión
+
+El dinero que pasa entre un bolsillo y una inversión se considera una transferencia, no un ingreso ni un gasto.
+
+Ejemplo:
+
+```text
+Bolsillo Ahorros
+       │
+       │ $1.000.000
+       ▼
+CDT Bancolombia
+```
+
+Y para retirar:
+
+```text
+CDT Bancolombia
+       │
+       │ $1.200.000
+       ▼
+Bolsillo Ahorros
+```
+
+El rendimiento generado por la inversión sí puede registrarse como interés o dividendo y posteriormente participar en los cálculos de ingresos.
+
+---
+
+## 24. Presupuesto mensual de ingresos
+
+El módulo de presupuestos permite diferenciar:
+
+```text
+income  → ingresos
+expense → gastos
+```
+
+Esto permite definir objetivos mensuales de ingresos además de los presupuestos de gastos existentes.
+
+Ejemplo:
+
+```text
+Presupuesto agosto
+
+INGRESOS
+Salario          $4.000.000
+Freelance          $500.000
+Dividendos         $100.000
+Intereses          $150.000
+────────────────────────────
+Meta              $4.750.000
+```
+
+Las transferencias entre bolsillos, aportes a inversiones y retiros de capital no deben alterar por sí mismos los totales de ingresos/gastos.
+
+---
+
+## 25. Importación y exportación
+
+La aplicación permite trabajar con ambos formatos:
+
+```text
+Exportar
+├── JSON
+└── CSV
+
+Importar
+├── JSON
+└── CSV
+```
+
+JSON continúa siendo el formato de respaldo estructurado. CSV facilita la edición, consulta y análisis en Excel, Google Sheets u otras herramientas.
+
+La exportación CSV debe conservar los identificadores necesarios para que los registros importados puedan mantener sus relaciones con categorías, tarjetas y bolsillos.
 
