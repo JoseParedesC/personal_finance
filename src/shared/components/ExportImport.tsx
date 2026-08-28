@@ -3,6 +3,7 @@ import { Download, Upload } from "lucide-react";
 import type { Transaction } from "../types/transaction";
 import { Button } from "./Button";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { SelectDataType } from "./SelectDatatype";
 
 interface ExportImportProps {
   transactions: Transaction[];
@@ -12,6 +13,7 @@ interface ExportImportProps {
 export function ExportImport({ transactions, onImport }: ExportImportProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [pendingImport, setPendingImport] = useState<Transaction[] | null>(null);
+  const [openDataTypeModal, setOpenDataTypeModal] = useState<Transaction[] | null>(null);
 
   function handleExport() {
     const blob = new Blob([JSON.stringify(transactions, null, 2)], {
@@ -45,7 +47,7 @@ export function ExportImport({ transactions, onImport }: ExportImportProps) {
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Button variant="secondary" onClick={handleExport}>
+      <Button variant="secondary" onClick={setOpenDataTypeModal.bind(null, transactions)}>
         <Download size={15} />
         Exportar datos
       </Button>
@@ -70,6 +72,17 @@ export function ExportImport({ transactions, onImport }: ExportImportProps) {
         onConfirm={() => {
           if (pendingImport) onImport(pendingImport);
           setPendingImport(null);
+        }}
+      />
+      <SelectDataType
+        isOpen={openDataTypeModal !== null}
+        title="Formato de datos"
+        message="Seleccione el formato de los datos a procesar."
+        confirmLabel="Importar"
+        onCancel={() => setOpenDataTypeModal(null)}
+        onConfirm={() => {
+          if (openDataTypeModal) onImport(openDataTypeModal);
+          setOpenDataTypeModal(null);
         }}
       />
     </div>
