@@ -11,6 +11,7 @@ import {
   CreditCard as CreditCardIcon,
   Target,
   TrendingUp,
+  CircleHelp,
 } from "lucide-react";
 import { Modal } from "./Modal";
 import { TransactionForm } from "../../modules/transactions/components/TransactionForm";
@@ -42,6 +43,8 @@ const CONFIG_ITEMS: { id: Page; label: string; icon: typeof LayoutDashboard }[] 
   { id: "categories", label: "Categoría", icon: Settings },
   { id: "investment-master", label: "Inversiones", icon: TrendingUp },
 ];
+
+const HOW_TO_USE_URL = import.meta.env.VITE_HOW_TO_USE_URL ?? "./index.html";
 
 export function Layout({ page, onNavigate, user, onLogout, children }: LayoutProps) {
   const { add } = useTransactionManager();
@@ -159,6 +162,15 @@ export function Layout({ page, onNavigate, user, onLogout, children }: LayoutPro
                     {label}
                   </button>
                 ))}
+                <a
+                  href={HOW_TO_USE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-slate hover:bg-mist hover:text-ink sm:col-span-2"
+                >
+                  <CircleHelp size={17} />
+                  How to Use
+                </a>
               </div>
             </nav>
           )}
@@ -201,6 +213,17 @@ export function Layout({ page, onNavigate, user, onLogout, children }: LayoutPro
                 </button>
               </li>
             ))}
+            <li className="mt-1 border-t border-line pt-2">
+              <a
+                href={HOW_TO_USE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-slate transition-colors hover:bg-mist hover:text-ink"
+              >
+                <CircleHelp size={16} />
+                How to Use
+              </a>
+            </li>
           </ul>
         </nav>
 
